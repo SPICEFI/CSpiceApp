@@ -55,12 +55,16 @@ std::string CSpiceUtil::GetTraceback()
 	return std::string(traceback);
 }
 
+void CSpiceUtil::SignalError(const std::string& errorMsg)
+{
+	LogError(errorMsg);
+
+	throw std::runtime_error(errorMsg);
+}
+
 void CSpiceUtil::LogError(const std::string& extraMsg)
 {
 	if(logFile == "")
-		return;
-
-	if(!failed_c())
 		return;
 
 	time_t now = time(nullptr);
@@ -72,10 +76,15 @@ void CSpiceUtil::LogError(const std::string& extraMsg)
 
 	out << std::put_time(&timeInfo, "%a %b %d %Y %H:%M:%S") << "\n";
 	out << "\tToolkit version: " << tkvrsn_c("toolkit") << "\n";
-	out << "\tShort: " << GetShortErrorMessage() << "\n";
-	out << "\tExplain: " << GetExplainErrorMessage() << "\n";
-	out << "\tLong: " << GetLongErrorMessage() << "\n";
-	out << "\tTraceback: " << GetTraceback() << "\n";
+
+	if(failed_c())
+	{
+		out << "\tShort: " << GetShortErrorMessage() << "\n";
+		out << "\tExplain: " << GetExplainErrorMessage() << "\n";
+		out << "\tLong: " << GetLongErrorMessage() << "\n";
+		out << "\tTraceback: " << GetTraceback() << "\n";
+	}
+
 	out << "\tExtra info: " << extraMsg << "\n";
 	out << "\n";
 

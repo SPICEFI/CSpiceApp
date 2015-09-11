@@ -13,16 +13,14 @@
 	{																																												\
 		std::stringstream errorStr;																																					\
 		errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): Error flag was set prior to function call: " << CSpiceUtil::GetShortErrorMessage();				\
-		CSpiceUtil::LogError(errorStr.str());																																		\
-		throw std::runtime_error(errorStr.str());																																	\
+		CSpiceUtil::SignalError(errorStr.str());																																	\
 	}																																												\
 	expression;																																										\
 	if(failed_c())																																									\
 	{																																												\
 		std::stringstream errorStr;																																					\
 		errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): " << CSpiceUtil::GetShortErrorMessage();															\
-		CSpiceUtil::LogError(errorStr.str());																																		\
-		throw std::runtime_error(errorStr.str());																																	\
+		CSpiceUtil::SignalError(errorStr.str());																																	\
 	}
 
 class CSpiceUtil
@@ -36,6 +34,7 @@ public:
 	static std::string GetLongErrorMessage();
 	static std::string GetTraceback();
 
+	static void SignalError(const std::string& errorMsg);
 	static void LogError(const std::string& extraMsg);
 
 	static void ResetErrorFlag();

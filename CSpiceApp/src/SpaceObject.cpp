@@ -12,7 +12,7 @@ SpaceObject::SpaceObject(const std::string& spiceName, const std::string& name)
 	CSPICE_ASSERT( bodn2c_c(spiceName.c_str(), &spiceId, &found) );
 
 	if(!found)
-		throw std::runtime_error("No such CSpice object is defined");
+		CSpiceUtil::SignalError("Cannot translate " + spiceName + " into ID code");
 
 	Construct(spiceId, name);
 }
@@ -20,7 +20,7 @@ SpaceObject::SpaceObject(const std::string& spiceName, const std::string& name)
 void SpaceObject::Construct(long spiceId, const std::string& name)
 {
 	if(!ValidateId(spiceId))
-		throw std::runtime_error("No such CSpice object is defined");
+		CSpiceUtil::SignalError("No such CSpice object ID code is defined: " + std::to_string(spiceId));
 
 	this->spiceId = spiceId;
 
