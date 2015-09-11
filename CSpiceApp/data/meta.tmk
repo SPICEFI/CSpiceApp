@@ -1,0 +1,32 @@
+\begintext
+
+	Blank line at the end of file is essential
+
+\begindata
+
+	PATH_VALUES  = (	'C:/Users/jne0xff/Documents/NASA/SPICE/Kernels' )
+
+	PATH_SYMBOLS = (	'BASE' )
+
+
+	KERNELS_TO_LOAD = (	'$BASE/spk/planets/de430.bsp',
+						'$BASE/spk/satellites/jup300.bsp'
+						'$BASE/spk/satellites/jup310.bsp'
+						'$BASE/spk/satellites/jup329.bsp'
+						'$BASE/spk/satellites/mar097.bsp'
+						'$BASE/spk/satellites/nep077.bsp'
+						'$BASE/spk/satellites/nep081.bsp'
+						'$BASE/spk/satellites/nep086.bsp'
+						'$BASE/spk/satellites/nep087.bsp'
+						'$BASE/spk/satellites/plu043.bsp'
+						'$BASE/spk/satellites/sat319.bsp'
+						'$BASE/spk/satellites/sat363.bsp'
+						'$BASE/spk/satellites/sat363-rocks-merge.bsp'
+						'$BASE/spk/satellites/sat368.bsp'
+						'$BASE/spk/satellites/sat375.bsp'
+						'$BASE/spk/satellites/ura091-rocks-merge.bsp'
+						'$BASE/spk/satellites/ura111.bsp'
+						'$BASE/spk/satellites/ura112.bsp'
+						'$BASE/lsk/naif0011.tls.pc',
+						'$BASE/pck/pck00010.tpc',
+						'$BASE/pck/gm_de431.tpc' )

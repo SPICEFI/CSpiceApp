@@ -1,0 +1,9 @@
+{
+	"Bodies": [
+		{
+			"name" : "Earth",
+			"CSpice_ID" : "EARTH",
+			
+		}
+	]
+}
