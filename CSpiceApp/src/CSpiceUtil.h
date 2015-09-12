@@ -7,27 +7,47 @@
 #include <ctime>
 #include <fstream>
 #include <iomanip>
+#include <vector>
 
 #define CSPICE_ASSERT(expression)																																					\
-	if(failed_c())																																									\
+	if(true)																																										\
 	{																																												\
-		std::stringstream errorStr;																																					\
-		errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): Error flag was set prior to function call: " << CSpiceUtil::GetShortErrorMessage();				\
-		CSpiceUtil::SignalError(errorStr.str());																																	\
+		if(failed_c())																																								\
+		{																																											\
+			std::stringstream errorStr;																																				\
+			errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): Error flag was set prior to function call: " << CSpiceUtil::GetShortErrorMessage();			\
+			CSpiceUtil::SignalError(errorStr.str());																																\
+		}																																											\
+		expression;																																									\
+		if(failed_c())																																								\
+		{																																											\
+			std::stringstream errorStr;																																				\
+			errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): " << CSpiceUtil::GetShortErrorMessage();														\
+			CSpiceUtil::SignalError(errorStr.str());																																\
+		}																																											\
 	}																																												\
-	expression;																																										\
-	if(failed_c())																																									\
-	{																																												\
-		std::stringstream errorStr;																																					\
-		errorStr << "CSpice error in " << __FILE__ << " (line " << __LINE__ << "): " << CSpiceUtil::GetShortErrorMessage();															\
-		CSpiceUtil::SignalError(errorStr.str());																																	\
-	}
+	else																																											\
+		(void)0
+
+#define KERNEL_FILENAME_LENGTH 1024
+#define KERNEL_TYPE_LENGTH 16
+#define KERNEL_SOURCE_LENGTH 1024
+
+struct KernelData
+{
+	std::string filename;
+	std::string type;
+	std::string source;
+};
 
 class CSpiceUtil
 {
 public:
 	static void SetErrorHandlingParams(const std::string& action, const std::string& device);
 	static void SetLoggingFile(const std::string& file);
+
+	static void LoadKernel(const std::string& path);
+	static std::vector<KernelData> GetLoadedKernels(const std::string& type = "ALL");
 
 	static std::string GetShortErrorMessage();
 	static std::string GetExplainErrorMessage();

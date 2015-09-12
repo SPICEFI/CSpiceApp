@@ -5,8 +5,9 @@ int main()
 	try
 	{
 		App app;
-		app.LoadKernel("data/meta.tmk");
 		app.SetLoggingFile("error.log");
+
+		app.LoadKernel("data/meta.tmk");
 
 		SpaceBody earth("earth");
 		SpaceBody moon(301);
@@ -14,17 +15,19 @@ int main()
 		SpaceObject uranus_barycenter(7, "U.B.");
 		SpaceBody sun = SpaceObject::Sun;
 
-		app.AddObject(earth);
-		app.AddObject(moon);
-		app.AddObject(mars);
-		app.AddObject(uranus_barycenter);
+		//app.AddObject(earth);
+		//app.AddObject(moon);
+		//app.AddObject(mars);
+		//app.AddObject(uranus_barycenter);
 		app.AddObject(sun);
-		app.AddObject(earth); // Has no effect
+		//app.AddObject(earth); // Has no effect
 
-		app.LoadChildren(SpaceObject("mars barycenter"));
+		//app.LoadChildren(SpaceObject("mars barycenter"));
 
 		//app.LoadSolarSystem(); // Will not re-add existing objects
-		app.LoadSolarSystem(true); // Load only planets
+		//app.LoadSolarSystem(true); // Load only planets
+
+		app.AddObject(SpaceBody("METHONE"));
 
 		size_t objectsCount = app.GetObjectsLength();
 		for(size_t i = 0; i < objectsCount; i++)
@@ -59,7 +62,28 @@ int main()
 
 			}
 
-			Time t("Aug 17 2019 15:51:01 UTC-5");
+			Window coverage = obj.GetSpkCoverage();
+
+			std::vector<Interval> intervals = coverage.GetIntervals();
+
+			std::cout << "SPK Coverage:" << std::endl;
+			if(intervals.size() == 0)
+			{
+				std::cout << "\tObject does not contain any state data" << std::endl;
+			}
+
+			for(size_t i = 0; i < intervals.size(); i++)
+			{
+				Interval interval = intervals[i];
+
+				Time begin(interval.GetLeft());
+				Time end(interval.GetRight());
+
+				std::cout << "\t" << begin.AsString() << " - " << end.AsString() << std::endl;
+			}
+			std::cout << std::endl;
+
+			Time t("Aug 17 2200 15:51:01 UTC-5");
 			//Time t("Aug 17 2000 15:51:01 UTC-5");
 
 			t += 7 * Time::hour; // + 7 hours
@@ -69,13 +93,20 @@ int main()
 
 			bool time_cmp = t < t2; // false
 
-			std::cout << "State on " << t.AsString() << ":" << std::endl;
+			std::cout << "State and orientation on " << t.AsString() << ":" << std::endl;
 
-			Vector3 pos = obj.GetPosition(t, SpaceObject::SSB, Frame::J2000);
-			Vector3 vel = obj.GetVelocity(t, SpaceObject::SSB, Frame::J2000);
+			if(coverage.IsIncluded(t.AsDouble()))
+			{
+				Vector3 pos = obj.GetPosition(t, SpaceObject::SSB, Frame::J2000);
+				Vector3 vel = obj.GetVelocity(t, SpaceObject::SSB, Frame::J2000);
 
-			std::cout << "\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m" << std::endl;
-			std::cout << "\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s" << std::endl;
+				std::cout << "\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m" << std::endl;
+				std::cout << "\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s" << std::endl;
+			}
+			else
+			{
+				std::cout << "\tNo state data on this epoch" << std::endl;
+			}
 
 			try
 			{
@@ -89,7 +120,7 @@ int main()
 				Vector3 axisY = objFrame.AxisY(t);
 				Vector3 axisZ = objFrame.AxisZ(t);
 
-				std::cout << "\tFrame:" << std::endl;
+				std::cout << "\tOrientation:" << std::endl;
 
 				std::cout << "\t\tX axis: (" << axisX.x << ", " << axisX.y << ", " << axisX.z << ")" << std::endl;
 				std::cout << "\t\tY axis: (" << axisY.x << ", " << axisY.y << ", " << axisY.z << ")" << std::endl;
@@ -103,7 +134,7 @@ int main()
 			}
 			catch(const std::runtime_error&)
 			{
-				std::cout << "No frame data available" << std::endl;
+				std::cout << "\tNo orientation data available" << std::endl;
 				CSpiceUtil::ResetErrorFlag();
 			}
 			catch(const std::bad_cast&)

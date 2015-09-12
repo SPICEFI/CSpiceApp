@@ -23,6 +23,40 @@ void CSpiceUtil::SetLoggingFile(const std::string& file)
 	logFile = file;
 }
 
+void CSpiceUtil::LoadKernel(const std::string& path)
+{
+	CSPICE_ASSERT(furnsh_c(path.c_str()));
+}
+
+std::vector<KernelData> CSpiceUtil::GetLoadedKernels(const std::string& type)
+{
+	long count;
+	CSPICE_ASSERT(ktotal_c(type.c_str(), &count));
+
+	std::vector<KernelData> kernels;
+	kernels.reserve(count);
+
+	for(long i = 0; i < count; i++)
+	{
+		char filename[KERNEL_FILENAME_LENGTH];
+		char filetype[KERNEL_TYPE_LENGTH];
+		char source[KERNEL_SOURCE_LENGTH];
+		long handle;
+		int found;
+
+		CSPICE_ASSERT(kdata_c(i, type.c_str(), KERNEL_FILENAME_LENGTH, KERNEL_TYPE_LENGTH, KERNEL_TYPE_LENGTH, filename, filetype, source, &handle, &found));
+
+		KernelData kernelData;
+		kernelData.filename = std::string(filename);
+		kernelData.type = std::string(filetype);
+		kernelData.source = std::string(source);
+
+		kernels.push_back(kernelData);
+	}
+
+	return kernels;
+}
+
 std::string CSpiceUtil::GetShortErrorMessage()
 {
 	char msg[SPICE_ERROR_SMSGLN];

@@ -8,6 +8,7 @@
 #include "Frame.h"
 #include "Time.h"
 #include "Orientation.h"
+#include "Window.h"
 
 #define SSB_SPICE_ID 0
 #define SUN_SPICE_ID 10
@@ -29,11 +30,10 @@ public:
 	std::string GetSpiceName() const;
 	const std::string& GetName() const;
 
-	//Frame GetBodyFrame() const;
-
 	Vector3 GetPosition(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
 	Vector3 GetVelocity(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
-	//Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
+
+	Window GetSpkCoverage() const;
 
 	static bool ValidateId(long id);
 

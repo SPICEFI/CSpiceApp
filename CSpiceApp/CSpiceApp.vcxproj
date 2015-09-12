@@ -22,6 +22,7 @@
     <ClCompile Include="src\SpaceObject.cpp" />
     <ClCompile Include="src\Time.cpp" />
     <ClCompile Include="src\Vector3.cpp" />
+    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="src\SpaceObject.h" />
     <ClInclude Include="src\Time.h" />
     <ClInclude Include="src\Vector3.h" />
+    <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BABADF43-DC10-42B9-8CC7-25B8FA60AA1B}</ProjectGuid>

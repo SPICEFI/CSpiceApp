@@ -23,7 +23,7 @@ void App::Init() const
 
 void App::LoadKernel(const std::string& file) const
 {
-	CSPICE_ASSERT( furnsh_c(file.c_str()) );
+	CSpiceUtil::LoadKernel(file);
 }
 
 void App::SetLoggingFile(const std::string& file) const

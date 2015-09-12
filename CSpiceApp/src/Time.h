@@ -15,15 +15,15 @@ public:
 	double AsDouble() const;
 	std::string AsString(const std::string& format = "Mon DD YYYY HR:MN:SC (UTC+0) ::UTC+0") const;
 
-	Time operator+(double rhs)
+	Time operator+(double rhs) const
 	{
 		return Time(etTime + rhs);
 	}
-	Time operator-(double rhs)
+	Time operator-(double rhs) const
 	{
 		return (*this) + (-rhs);
 	}
-	double operator-(const Time& rhs)
+	double operator-(const Time& rhs) const
 	{
 		return etTime - rhs.AsDouble();
 	}
@@ -37,11 +37,11 @@ public:
 		etTime -= rhs;
 		return *this;
 	}
-	bool operator<(const Time& rhs)
+	bool operator<(const Time& rhs) const
 	{
 		return this->AsDouble() < rhs.AsDouble();
 	}
-	bool operator>(const Time& rhs)
+	bool operator>(const Time& rhs) const
 	{
 		return this->AsDouble() > rhs.AsDouble();
 	}

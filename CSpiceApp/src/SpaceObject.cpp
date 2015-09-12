@@ -63,20 +63,6 @@ const std::string& SpaceObject::GetName() const
 	return name;
 }
 
-//Frame SpaceObject::GetBodyFrame() const
-//{
-//	char frameName[FRAME_NAME_MAX_LENGTH];
-//	long frameId;
-//	SpiceBoolean found;
-//
-//	CSPICE_ASSERT( cidfrm_c(spiceId, FRAME_NAME_MAX_LENGTH, &frameId, frameName, &found) );
-//
-//	if(!found)
-//		throw std::runtime_error("No such frame available");
-//
-//	return Frame(frameId);
-//}
-
 Vector3 SpaceObject::GetPosition(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const
 {
 	double etTime = t.AsDouble();
@@ -111,10 +97,21 @@ Vector3 SpaceObject::GetVelocity(const Time& t, const SpaceObject& relativeTo, c
 	return Vector3(&state[3]);
 }
 
-//Orientation SpaceObject::GetOrientation(const Time& t, const Frame& ref) const
-//{
-//	return GetBodyFrame().GetOrientation(t, ref);
-//}
+Window SpaceObject::GetSpkCoverage() const
+{
+	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("SPK");
+
+	Window coverage;
+
+	for(size_t i = 0; i < kernels.size(); i++)
+	{
+		std::string file = kernels[i].filename;
+
+		CSPICE_ASSERT( spkcov_c(file.c_str(), this->spiceId, &coverage.GetSpiceCell()) );
+	}
+
+	return coverage;
+}
 
 bool SpaceObject::ValidateId(long id)
 {
@@ -171,30 +168,14 @@ std::vector<long> SpaceObject::FindChildObjectIds(long id)
 
 	if(id == SSB_SPICE_ID)
 	{
-		/*long sunId = 10;
-		ids = FindChildObjectIds(sunId);
-		ids.push_back(sunId);*/
-
 		for(int i = 1; i <= 10; i++)
 		{
 			if(ValidateId(i))
 				ids.push_back(i);
 		}
 	}
-	//else if(id == SUN_SPICE_ID)
-	//{
-	//	for(int i = 1; i <= 9; i++)
-	//	{
-	//		if(ValidateId(i))
-	//			ids.push_back(i);
-	//	}
-	//}
 	else if(IsPlanetaryBarycenter(id))
 	{
-		/*long planetId = id * 100 + 99;
-		ids = FindChildObjectIds(planetId);
-		ids.push_back(planetId);*/
-
 		for(int i = 1; i <= 99; i++)
 		{
 			long satelliteId = 100 * id + i;
@@ -202,17 +183,6 @@ std::vector<long> SpaceObject::FindChildObjectIds(long id)
 				ids.push_back(satelliteId);
 		}
 	}
-	//else if(IsPlanet(id))
-	//{
-	//	long barycenterId = id / 100;
-
-	//	for(int i = 1; i <= 98; i++)
-	//	{
-	//		long satelliteId = 100 * barycenterId + i;
-	//		if(ValidateId(satelliteId))
-	//			ids.push_back(satelliteId);
-	//	}
-	//}
 
 	return ids;
 }
