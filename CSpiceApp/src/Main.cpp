@@ -10,7 +10,7 @@ int main()
 		App app;
 		app.SetLoggingFile("error.log");
 
-		app.LoadKernel("data/meta.tmk");
+		app.LoadKernel("data/meta.tm");
 
 		app.SetReferenceFrame(Frame::ECLIPJ2000); // Set reference frame to ECLIPJ200, default is J2000
 
