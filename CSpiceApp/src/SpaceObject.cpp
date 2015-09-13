@@ -97,7 +97,7 @@ Vector3 SpaceObject::GetVelocity(const Time& t, const SpaceObject& relativeTo, c
 	return Vector3(&state[3]);
 }
 
-Window SpaceObject::GetSpkCoverage() const
+Window SpaceObject::GetCoverage() const
 {
 	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("SPK");
 
@@ -159,7 +159,7 @@ bool SpaceObject::IsBody(long id)
 	if(ValidateId(id) == false)
 		return false;
 
-	return (id > 100 && id < 1000);
+	return ((id > 100 && id < 1000) || id == SUN_SPICE_ID);
 }
 
 std::vector<long> SpaceObject::FindChildObjectIds(long id)

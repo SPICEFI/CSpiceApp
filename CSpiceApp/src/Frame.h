@@ -4,21 +4,41 @@
 #include "Vector3.h"
 #include "Time.h"
 #include "Orientation.h"
+#include "Window.h"
 
 #define FRAME_NAME_MAX_LENGTH 64
 
 class Frame
 {
 public:
+	enum FrameType
+	{
+		FT_INERTIAL = 1,
+		FT_PCK,
+		FT_CK,
+		FT_TK,
+		FT_DYNAMIC
+	};
+
+	struct FrameInfo
+	{
+		long centerId;
+		FrameType frameType;
+		long classId;
+	};
+
+public:
 	Frame(int spiceId, const std::string& name = "");
 	Frame(const std::string& spiceName, const std::string& name = "");
-	void Construct(int spiceId, const std::string& name);
 	~Frame();
 
 	long GetSpiceId() const;
-	const std::string GetSpiceName() const;
+	std::string GetSpiceName() const;
+	const std::string& GetName() const;
 
-	long GetCenterObjectId() const;
+	//FrameType GetFrameType() const;
+	//long GetCenterObjectId() const;
+	FrameInfo GetFrameInfo() const;
 
 	Vector3 TransformVector(const Vector3& vec, const Time& t, const Frame& ref = Frame::J2000) const;
 	Vector3 AxisX(const Time& t, const Frame& ref = Frame::J2000) const;
@@ -27,7 +47,19 @@ public:
 
 	Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
 
+	bool HasAvailableData() const;
+	bool HasLimitedCoverage() const;
+	Window GetCoverage() const;
+
 	static bool ValidateId(long id);
+	static long MakeFrameId(FrameType type, long classId);
+
+	static std::vector<long> GetBuiltInIds();
+	static std::vector<long> GetPoolIds();
+	static std::vector<long> GetLoadedPckIds();
+
+private:
+	void Construct(int spiceId, const std::string& name);
 
 private:
 	long spiceId;

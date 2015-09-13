@@ -30,8 +30,12 @@
 		(void)0
 
 #define KERNEL_FILENAME_LENGTH 1024
-#define KERNEL_TYPE_LENGTH 16
+#define KERNEL_TYPE_LENGTH 32
 #define KERNEL_SOURCE_LENGTH 1024
+
+#define CELL_SIZE_SMALL 128
+#define CELL_SIZE_DEFAULT 512
+#define CELL_SIZE_LARGE 2048
 
 struct KernelData
 {
@@ -58,6 +62,10 @@ public:
 	static void LogError(const std::string& extraMsg);
 
 	static void ResetErrorFlag();
+
+	static std::vector<long> IntCellToVector(SpiceCell cell);
+	static std::vector<double> DoubleCellToVector(SpiceCell cell);
+	//static std::vector<std::string> CharCellToVector(SpiceCell cell);
 
 private:
 	static std::string logFile;

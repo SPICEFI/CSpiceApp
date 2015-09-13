@@ -20,7 +20,6 @@ class SpaceObject
 public:
 	SpaceObject(long spiceId, const std::string& name = "");
 	SpaceObject(const std::string& spiceName, const std::string& name = "");
-	void Construct(long spiceId, const std::string& name);
 	virtual ~SpaceObject();
 
 	virtual SpaceObject* Clone() const;
@@ -33,7 +32,7 @@ public:
 	Vector3 GetPosition(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
 	Vector3 GetVelocity(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
 
-	Window GetSpkCoverage() const;
+	Window GetCoverage() const;
 
 	static bool ValidateId(long id);
 
@@ -45,6 +44,9 @@ public:
 
 	static std::vector<long> FindChildObjectIds(long id);
 	static long FindParentObjectId(long id);
+
+private:
+	void Construct(long spiceId, const std::string& name);
 
 protected:
 	long spiceId;

@@ -2,6 +2,9 @@
 
 int main()
 {
+	std::ofstream fout;
+	fout.open("out.txt");
+
 	try
 	{
 		App app;
@@ -9,148 +12,185 @@ int main()
 
 		app.LoadKernel("data/meta.tmk");
 
-		SpaceBody earth("earth");
-		SpaceBody moon(301);
-		SpaceBody mars("maRS", "Mars");
-		SpaceObject uranus_barycenter(7, "U.B.");
-		SpaceBody sun = SpaceObject::Sun;
+		app.SetReferenceFrame(Frame::ECLIPJ2000); // Set reference frame to ECLIPJ200, default is J2000
 
-		//app.AddObject(earth);
-		//app.AddObject(moon);
-		//app.AddObject(mars);
-		//app.AddObject(uranus_barycenter);
-		app.AddObject(sun);
-		//app.AddObject(earth); // Has no effect
+		app.LoadChildren(SpaceObject("Solar system barycenter"), true, true);
 
-		//app.LoadChildren(SpaceObject("mars barycenter"));
+		std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels();
 
-		//app.LoadSolarSystem(); // Will not re-add existing objects
-		//app.LoadSolarSystem(true); // Load only planets
-
-		app.AddObject(SpaceBody("METHONE"));
+		fout << "Loaded kernels:" << std::endl;
+		for(size_t i = 0; i < kernels.size(); i++)
+		{
+			KernelData kData = kernels[i];
+			fout << "\t" << kData.filename << "(" << kData.type << ")" << std::endl;
+		}
+		fout << std::endl;
 
 		size_t objectsCount = app.GetObjectsLength();
 		for(size_t i = 0; i < objectsCount; i++)
 		{
 			const SpaceObject& obj = app.GetObject(i);
 
-			std::cout << obj.GetName() << " summary:" << std::endl;
+			fout << obj.GetName() << " summary:" << std::endl;
 
 			try
 			{
 				const SpaceBody& body = dynamic_cast<const SpaceBody&>(obj);
 
-				std::cout << "Bulk parameters:" << std::endl;
+				fout << "Bulk parameters:" << std::endl;
 
 				if(body.HasParameter(SpaceBody::BP_MASS))
-					std::cout << "\tMass: " << body.GetSingleDimParam(SpaceBody::BP_MASS) << " kg" << std::endl;
+					fout << "\tMass: " << body.GetSingleDimParam(SpaceBody::BP_MASS) << " kg" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_GM))
-					std::cout << "\tGM: " << body.GetSingleDimParam(SpaceBody::BP_GM) << " m^3 / s^2" << std::endl;
+					fout << "\tGM: " << body.GetSingleDimParam(SpaceBody::BP_GM) << " m^3 / s^2" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_ACC))
-					std::cout << "\tg: " << body.GetSingleDimParam(SpaceBody::BP_ACC) << " m / s^2" << std::endl;
+					fout << "\tg: " << body.GetSingleDimParam(SpaceBody::BP_ACC) << " m / s^2" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_RADIUS))
 				{
 					double radius = body.GetSingleDimParam(SpaceBody::BP_RADIUS);
 					std::vector<double> radii = body.GetMultiDimParam(SpaceBody::BP_RADIUS);
-					std::cout << "\tRadius: " << radius << " (" << radii[0] << ", " << radii[1] << ", " << radii[2] << ") m" << std::endl;
+					fout << "\tRadius: " << radius << " (" << radii[0] << ", " << radii[1] << ", " << radii[2] << ") m" << std::endl;
 				}
 
-				std::cout << std::endl;
+				fout << std::endl;
 			}
 			catch(const std::bad_cast&)
 			{
 
 			}
 
-			Window coverage = obj.GetSpkCoverage();
+			Time t("Aug 17 2000 15:51:01 UTC-5");
 
-			std::vector<Interval> intervals = coverage.GetIntervals();
+			Window spkCoverage = obj.GetCoverage();
+			std::vector<Interval> spkIntervals = spkCoverage.GetIntervals();
 
-			std::cout << "SPK Coverage:" << std::endl;
-			if(intervals.size() == 0)
+			fout << "SPK state:" << std::endl;
+
+			fout << "\tCoverage:" << std::endl;
+			if(spkIntervals.size() == 0)
 			{
-				std::cout << "\tObject does not contain any state data" << std::endl;
+				fout << "\t\tObject does not contain any state data" << std::endl;
 			}
 
-			for(size_t i = 0; i < intervals.size(); i++)
+			for(size_t i = 0; i < spkIntervals.size(); i++)
 			{
-				Interval interval = intervals[i];
+				Interval interval = spkIntervals[i];
 
 				Time begin(interval.GetLeft());
 				Time end(interval.GetRight());
 
-				std::cout << "\t" << begin.AsString() << " - " << end.AsString() << std::endl;
+				fout << "\t\t" << begin.AsString() << " - " << end.AsString() << std::endl;
 			}
-			std::cout << std::endl;
+			fout << std::endl;
 
-			Time t("Aug 17 2200 15:51:01 UTC-5");
-			//Time t("Aug 17 2000 15:51:01 UTC-5");
+			fout << "\t" << t.AsString() << " relative to " << app.GetReferenceFrame().GetName() << ":" << std::endl;
 
-			t += 7 * Time::hour; // + 7 hours
-			t -= 7 * Time::day; // - 1 week
-
-			Time t2 = t - Time::second;
-
-			bool time_cmp = t < t2; // false
-
-			std::cout << "State and orientation on " << t.AsString() << ":" << std::endl;
-
-			if(coverage.IsIncluded(t.AsDouble()))
+			if(spkCoverage.IsIncluded(t.AsDouble()))
 			{
-				Vector3 pos = obj.GetPosition(t, SpaceObject::SSB, Frame::J2000);
-				Vector3 vel = obj.GetVelocity(t, SpaceObject::SSB, Frame::J2000);
+				Vector3 pos = obj.GetPosition(t, SpaceObject::SSB, app.GetReferenceFrame());
+				Vector3 vel = obj.GetVelocity(t, SpaceObject::SSB, app.GetReferenceFrame());
 
-				std::cout << "\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m" << std::endl;
-				std::cout << "\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s" << std::endl;
+				fout << "\t\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m" << std::endl;
+				fout << "\t\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s" << std::endl;
+
+				//fout << "\t\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m, abs=" << pos.Length() << " m" << std::endl;
+				//fout << "\t\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s, abs=" << vel.Length() << " m/s" << std::endl;
 			}
 			else
 			{
-				std::cout << "\tNo state data on this epoch" << std::endl;
+				fout << "\t\tNo state data on this epoch" << std::endl;
 			}
+			fout << std::endl;
 
 			try
 			{
 				const SpaceBody& body = dynamic_cast<const SpaceBody&>(obj);
 
-				Frame objFrame = body.GetBodyFrame();
-				Orientation orient = objFrame.GetOrientation(t, Frame::J2000);
-				//Orientation orient = body.GetOrientation(t, Frame::J2000); // also accepted
+				fout << "PCK orientation:" << std::endl;
 
-				Vector3 axisX = objFrame.AxisX(t);
-				Vector3 axisY = objFrame.AxisY(t);
-				Vector3 axisZ = objFrame.AxisZ(t);
+				if(body.HasDefaultFrame())
+				{					
+					Frame bodyFrame = body.GetDefaultFrame();
 
-				std::cout << "\tOrientation:" << std::endl;
+					fout << "(using frame " << bodyFrame.GetName() << ")" << std::endl;
 
-				std::cout << "\t\tX axis: (" << axisX.x << ", " << axisX.y << ", " << axisX.z << ")" << std::endl;
-				std::cout << "\t\tY axis: (" << axisY.x << ", " << axisY.y << ", " << axisY.z << ")" << std::endl;
-				std::cout << "\t\tZ axis: (" << axisZ.x << ", " << axisZ.y << ", " << axisZ.z << ")" << std::endl;
+					if(bodyFrame.HasAvailableData())
+					{
+						bool dataAvailableAtT = true;
 
-				// use for glRotate, tilt then rotate
-				Vector3 tiltAxis = orient.GetTiltAxis();
-				double tiltAngle = orient.GetTiltAngle();
-				Vector3 rotationAxis = orient.GetRotationAxis();
-				double rotationAngle = orient.GetRotationAngle();
-			}
-			catch(const std::runtime_error&)
-			{
-				std::cout << "\tNo orientation data available" << std::endl;
-				CSpiceUtil::ResetErrorFlag();
+						fout << "\tCoverage:" << std::endl;
+						if(bodyFrame.HasLimitedCoverage())
+						{
+							Window pckCoverage = bodyFrame.GetCoverage();
+							std::vector<Interval> pckIntervals = pckCoverage.GetIntervals();
+
+							dataAvailableAtT = pckCoverage.IsIncluded(t.AsDouble());
+
+							if(pckIntervals.size() == 0)
+							{
+								fout << "\t\tObject does not contain any orientation data" << std::endl;
+							}
+							for(size_t i = 0; i < pckIntervals.size(); i++)
+							{
+								Interval interval = pckIntervals[i];
+
+								Time begin(interval.GetLeft());
+								Time end(interval.GetRight());
+
+								fout << "\t\t" << begin.AsString() << " - " << end.AsString() << std::endl;
+							}
+							fout << std::endl;
+						}
+						else
+						{
+							fout << "\t\tUnlimited" << std::endl;
+						}
+
+						fout << "\t" << t.AsString() << app.GetReferenceFrame().GetName() << ":" << std::endl;
+
+						if(dataAvailableAtT)
+						{
+							Vector3 axisX = bodyFrame.AxisX(t, app.GetReferenceFrame());
+							Vector3 axisY = bodyFrame.AxisY(t, app.GetReferenceFrame());
+							Vector3 axisZ = bodyFrame.AxisZ(t, app.GetReferenceFrame());
+
+							fout << "\t\tX axis: (" << axisX.x << ", " << axisX.y << ", " << axisX.z << ")" << std::endl;
+							fout << "\t\tY axis: (" << axisY.x << ", " << axisY.y << ", " << axisY.z << ")" << std::endl;
+							fout << "\t\tZ axis: (" << axisZ.x << ", " << axisZ.y << ", " << axisZ.z << ")" << std::endl;
+						}
+						else
+						{
+							fout << "\t\tNo orientation data available on this epoch" << std::endl;
+						}
+					}
+					else
+					{
+						fout << "\tFrame does not contain any orientation data" << std::endl;
+					}
+				}
+				else
+				{
+					fout << "\tObject does not contain any orientation data" << std::endl;
+				}
 			}
 			catch(const std::bad_cast&)
 			{
 
 			}
 
-			std::cout << "=======================================================================" << std::endl;
-			std::cout << std::endl;
+			fout << "=======================================================================" << std::endl;
+			fout << std::endl;
 		}
 
-		std::cout << "All is fine" << std::endl;
+		std::cout << "All is fine. See out.txt for results" << std::endl;
 	}
 	catch(const std::exception& ex)
 	{
+		std::cout << std::endl;
+
+		std::cout << "Error encountered:" << std::endl;
 		std::cout << ex.what() << std::endl;
+		std::cout << "See details in the error log file" << std::endl;
 	}
 
 	std::getchar();

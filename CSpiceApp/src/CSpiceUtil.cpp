@@ -44,7 +44,7 @@ std::vector<KernelData> CSpiceUtil::GetLoadedKernels(const std::string& type)
 		long handle;
 		int found;
 
-		CSPICE_ASSERT(kdata_c(i, type.c_str(), KERNEL_FILENAME_LENGTH, KERNEL_TYPE_LENGTH, KERNEL_TYPE_LENGTH, filename, filetype, source, &handle, &found));
+		CSPICE_ASSERT(kdata_c(i, type.c_str(), KERNEL_FILENAME_LENGTH, KERNEL_TYPE_LENGTH, KERNEL_SOURCE_LENGTH, filename, filetype, source, &handle, &found));
 
 		KernelData kernelData;
 		kernelData.filename = std::string(filename);
@@ -89,7 +89,7 @@ std::string CSpiceUtil::GetTraceback()
 	return std::string(traceback);
 }
 
-void CSpiceUtil::SignalError(const std::string& errorMsg)
+void CSpiceUtil::SignalError(const std::string& errorMsg = "")
 {
 	LogError(errorMsg);
 
@@ -129,5 +129,59 @@ void CSpiceUtil::ResetErrorFlag()
 {
 	reset_c();
 }
+
+std::vector<long> CSpiceUtil::IntCellToVector(SpiceCell cell)
+{
+	if(cell.dtype != SPICE_INT)
+		CSpiceUtil::SignalError("IntCellToVector expected integer cell");
+
+	long size = card_c(&cell);
+
+	std::vector<long> res;
+	res.resize(size);
+
+	for(long i = 0; i < size; i++)
+	{
+		res[i] = SPICE_CELL_ELEM_I(&cell, i);
+	}
+
+	return res;
+}
+
+std::vector<double> CSpiceUtil::DoubleCellToVector(SpiceCell cell)
+{
+	if(cell.dtype != SPICE_DP)
+		CSpiceUtil::SignalError("IntCellToVector expected double cell");
+
+	long size = card_c(&cell);
+
+	std::vector<double> res;
+	res.resize(size);
+
+	for(long i = 0; i < size; i++)
+	{
+		res[i] = SPICE_CELL_ELEM_D(&cell, i);
+	}
+
+	return res;
+}
+
+//std::vector<std::string> CSpiceUtil::CharCellToVector(SpiceCell cell)
+//{
+//	if(cell.dtype != SPICE_CHR)
+//		CSpiceUtil::SignalError("IntCellToVector expected char cell");
+//
+//	long size = card_c(&cell);
+//
+//	std::vector<std::string> res;
+//	res.resize(size);
+//
+//	for(long i = 0; i < size; i++)
+//	{
+//		res[i] = SPICE_CELL_ELEM_C(&cell, i);
+//	}
+//
+//	return res;
+//}
 
 std::string CSpiceUtil::logFile = "";

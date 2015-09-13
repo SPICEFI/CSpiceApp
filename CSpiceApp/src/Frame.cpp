@@ -19,7 +19,7 @@ Frame::Frame(const std::string& spiceName, const std::string& name)
 void Frame::Construct(int spiceId, const std::string& name)
 {
 	if(!ValidateId(spiceId))
-		throw std::runtime_error("No such CSpice frame is defined");
+		CSpiceUtil::SignalError("No such CSpice frame is defined");
 
 	this->spiceId = spiceId;
 
@@ -43,7 +43,7 @@ long Frame::GetSpiceId() const
 	return spiceId;
 }
 
-const std::string Frame::GetSpiceName() const
+std::string Frame::GetSpiceName() const
 {
 	char frameName[FRAME_NAME_MAX_LENGTH];
 	CSPICE_ASSERT( frmnam_c(spiceId, FRAME_NAME_MAX_LENGTH, frameName) );
@@ -51,7 +51,36 @@ const std::string Frame::GetSpiceName() const
 	return std::string(frameName);
 }
 
-long Frame::GetCenterObjectId() const
+const std::string& Frame::GetName() const
+{
+	return name;
+}
+
+//Frame::FrameType Frame::GetFrameType() const
+//{
+//	SpiceInt centerId;
+//	SpiceInt clssid;
+//	SpiceInt frclss;
+//	SpiceBoolean found;
+//
+//	CSPICE_ASSERT(frinfo_c(spiceId, &centerId, &frclss, &clssid, &found));
+//
+//	return FrameType(frclss);
+//}
+//
+//long Frame::GetCenterObjectId() const
+//{
+//	SpiceInt centerId;
+//	SpiceInt clssid;
+//	SpiceInt frclss;
+//	SpiceBoolean found;
+//
+//	CSPICE_ASSERT(frinfo_c(spiceId, &centerId, &frclss, &clssid, &found));
+//
+//	return centerId;
+//}
+
+Frame::FrameInfo Frame::GetFrameInfo() const
 {
 	SpiceInt centerId;
 	SpiceInt clssid;
@@ -60,7 +89,12 @@ long Frame::GetCenterObjectId() const
 
 	CSPICE_ASSERT(frinfo_c(spiceId, &centerId, &frclss, &clssid, &found));
 
-	return centerId;
+	FrameInfo finfo;
+	finfo.centerId = centerId;
+	finfo.classId = clssid;
+	finfo.frameType = FrameType(frclss);
+
+	return finfo;
 }
 
 Vector3 Frame::TransformVector(const Vector3& vec, const Time& t, const Frame& ref) const
@@ -97,6 +131,45 @@ Orientation Frame::GetOrientation(const Time& t, const Frame& ref) const
 	return Orientation(AxisX(t, ref), AxisY(t, ref), AxisZ(t, ref));
 }
 
+bool Frame::HasAvailableData() const
+{
+	long centerId = GetFrameInfo().centerId;
+
+	bool hasPoleRa = (bodfnd_c(centerId, "POLE_RA") != SPICEFALSE);
+	bool hasPoleDec = (bodfnd_c(centerId, "POLE_DEC") != SPICEFALSE);
+	bool hasPm = (bodfnd_c(centerId, "PM") != SPICEFALSE);
+	bool centerHasIAUFrameData = hasPoleRa && hasPoleDec && hasPm;
+
+	bool isIAUFrame = GetSpiceName().substr(0, 3) == "IAU";
+
+	return (isIAUFrame && centerHasIAUFrameData) || HasLimitedCoverage();
+}
+
+bool Frame::HasLimitedCoverage() const
+{
+	const std::vector<long>& pckIds = GetLoadedPckIds();
+
+	std::vector<long>::const_iterator it = std::find(pckIds.begin(), pckIds.end(), this->spiceId);
+
+	return it != pckIds.end();
+}
+
+Window Frame::GetCoverage() const
+{
+	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("PCK");
+
+	Window coverage;
+
+	for(size_t i = 0; i < kernels.size(); i++)
+	{
+		std::string file = kernels[i].filename;
+
+		CSPICE_ASSERT(pckcov_c(file.c_str(), this->GetFrameInfo().classId, &coverage.GetSpiceCell()));
+	}
+
+	return coverage;
+}
+
 bool Frame::ValidateId(long id)
 {
 	SpiceInt centerId;
@@ -107,4 +180,51 @@ bool Frame::ValidateId(long id)
 	CSPICE_ASSERT(frinfo_c(id, &centerId, &frclss, &clssid, &found));
 
 	return found != SPICEFALSE;
+}
+
+long Frame::MakeFrameId(FrameType type, long classId)
+{
+	long frameId;
+	char frameName[FRAME_NAME_MAX_LENGTH];
+	long centerId;
+	SpiceBoolean found;
+	CSPICE_ASSERT(ccifrm_c(type, classId, FRAME_NAME_MAX_LENGTH, &frameId, frameName, &centerId, &found));
+
+	return (found != SPICEFALSE) ? frameId : 0;
+}
+
+std::vector<long> Frame::GetBuiltInIds()
+{
+	SPICEINT_CELL(cell, CELL_SIZE_LARGE);
+	CSPICE_ASSERT(bltfrm_c(SPICE_FRMTYP_ALL, &cell));
+	return CSpiceUtil::IntCellToVector(cell);
+}
+
+std::vector<long> Frame::GetPoolIds()
+{
+	SPICEINT_CELL(cell, CELL_SIZE_LARGE);
+	CSPICE_ASSERT(kplfrm_c(SPICE_FRMTYP_ALL, &cell));
+	return CSpiceUtil::IntCellToVector(cell);
+}
+
+std::vector<long> Frame::GetLoadedPckIds()
+{
+	SPICEINT_CELL(cell, CELL_SIZE_LARGE);
+	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("PCK");
+	for(size_t i = 0; i < kernels.size(); i++)
+	{
+		CSPICE_ASSERT(pckfrm_c(kernels[i].filename.c_str(), &cell));
+	}
+
+	std::vector<long> classIds = CSpiceUtil::IntCellToVector(cell);
+	std::vector<long> frameIds;
+	frameIds.reserve(classIds.size());
+
+	for(size_t i = 0; i < classIds.size(); i++)
+	{
+		frameIds.push_back(Frame::MakeFrameId(FT_PCK, classIds[i]));
+	}
+
+	return frameIds;
+	
 }

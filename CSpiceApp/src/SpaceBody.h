@@ -14,7 +14,10 @@ public:
 		BP_RADIUS,
 		BP_GM,
 		BP_MASS,
-		BP_ACC
+		BP_ACC,
+		BP_POLE_RA,
+		BP_POLE_DEC,
+		BP_PM
 	};
 
 public:
@@ -25,11 +28,25 @@ public:
 
 	virtual SpaceBody* Clone() const;
 
-	Frame GetBodyFrame() const;
-	Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
+	//void UseBodyFrame(const Frame& frame);
+	//bool HasBodyFrame() const;
+	//const Frame& GetBodyFrame() const;
+
+	bool HasIAUFrame() const;
+	Frame GetIAUFrame() const;
+	bool HasDefaultFrame() const;
+	Frame GetDefaultFrame() const;
+
+	//Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
 
 	bool HasParameter(BulkParameter param) const;
 
 	double GetSingleDimParam(BulkParameter param) const;
 	std::vector<double> GetMultiDimParam(BulkParameter param) const;
+
+private:
+	void Init();
+
+private:
+	//Frame* frame;
 };

@@ -1,6 +1,6 @@
 #include "App.h"
 
-App::App()
+App::App() : refFrame(REF_FRAME_DEFAULT)
 {
 	Init();
 }
@@ -31,6 +31,16 @@ void App::SetLoggingFile(const std::string& file) const
 	CSpiceUtil::SetLoggingFile(file);
 }
 
+void App::SetReferenceFrame(const Frame& ref)
+{
+	refFrame = ref;
+}
+
+const Frame& App::GetReferenceFrame() const
+{
+	return refFrame;
+}
+
 void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursive)
 {
 	long parentId = parent.GetSpiceId();
@@ -39,8 +49,6 @@ void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursi
 
 	if(includeSelf)
 	{
-		//SpaceObject* child = parent.Clone();
-		//objects.push_back(child);
 		AddObject(parent);
 	}
 
@@ -53,13 +61,6 @@ void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursi
 		else
 			AddObject(SpaceObject(childId));
 
-		//if(SpaceObject::IsBody(childId))
-		//	child = new SpaceBody(childId);
-		//else
-		//	child = new SpaceObject(childId);
-
-		//objects.push_back(child);
-
 		if(recursive)
 			LoadChildren(SpaceObject(childId), false);
 	}
@@ -67,21 +68,6 @@ void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursi
 
 void App::LoadSolarSystem(bool onlyPlanets)
 {
-	/*SpaceBody* sun = new SpaceBody(SpaceObject::Sun.GetSpiceId());
-	objects.push_back(sun);
-
-	std::vector<long> barycenterIds = SpaceObject::FindChildObjectIds(SpaceObject::SSB.GetSpiceId());
-	for(size_t i = 0; i < barycenterIds.size(); i++)
-	{
-		std::vector<long> bodiesId = SpaceObject::FindChildObjectIds(barycenterIds[i]);
-		for(size_t j = 0; j < bodiesId.size(); j++)
-		{
-			long bodyId = bodiesId[j];
-			SpaceBody* body = new SpaceBody(bodyId);
-			objects.push_back(body);
-		}
-	}*/
-
 	if(onlyPlanets)
 	{
 		std::vector<long> barycenterIds = SpaceObject::FindChildObjectIds(SpaceObject::SSB.GetSpiceId());
