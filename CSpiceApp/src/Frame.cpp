@@ -56,30 +56,6 @@ const std::string& Frame::GetName() const
 	return name;
 }
 
-//Frame::FrameType Frame::GetFrameType() const
-//{
-//	SpiceInt centerId;
-//	SpiceInt clssid;
-//	SpiceInt frclss;
-//	SpiceBoolean found;
-//
-//	CSPICE_ASSERT(frinfo_c(spiceId, &centerId, &frclss, &clssid, &found));
-//
-//	return FrameType(frclss);
-//}
-//
-//long Frame::GetCenterObjectId() const
-//{
-//	SpiceInt centerId;
-//	SpiceInt clssid;
-//	SpiceInt frclss;
-//	SpiceBoolean found;
-//
-//	CSPICE_ASSERT(frinfo_c(spiceId, &centerId, &frclss, &clssid, &found));
-//
-//	return centerId;
-//}
-
 Frame::FrameInfo Frame::GetFrameInfo() const
 {
 	SpiceInt centerId;

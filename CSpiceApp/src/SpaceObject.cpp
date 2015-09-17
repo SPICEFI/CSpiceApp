@@ -203,5 +203,17 @@ long SpaceObject::FindParentObjectId(long id)
 	}
 }
 
+std::vector<long> SpaceObject::GetLoadedSpkIds()
+{
+	SPICEINT_CELL(cell, CELL_SIZE_LARGE);
+	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("PCK");
+	for(size_t i = 0; i < kernels.size(); i++)
+	{
+		CSPICE_ASSERT(spkobj_c(kernels[i].filename.c_str(), &cell));
+	}
+
+	return CSpiceUtil::IntCellToVector(cell);
+}
+
 const SpaceObject SpaceObject::SSB = SpaceObject(SSB_SPICE_ID, "Solar System Barycenter");
 const SpaceObject SpaceObject::Sun = SpaceObject(SUN_SPICE_ID, "Sun");

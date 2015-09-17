@@ -29,8 +29,8 @@ public:
 	std::string GetSpiceName() const;
 	const std::string& GetName() const;
 
-	Vector3 GetPosition(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
-	Vector3 GetVelocity(const Time& t, const SpaceObject& relativeTo = SpaceObject::SSB, const Frame& frame = Frame::J2000) const;
+	Vector3 GetPosition(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const;
+	Vector3 GetVelocity(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const;
 
 	Window GetCoverage() const;
 
@@ -44,6 +44,8 @@ public:
 
 	static std::vector<long> FindChildObjectIds(long id);
 	static long FindParentObjectId(long id);
+
+	static std::vector<long> GetLoadedSpkIds();
 
 private:
 	void Construct(long spiceId, const std::string& name);

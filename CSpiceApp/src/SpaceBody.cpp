@@ -38,27 +38,6 @@ SpaceBody* SpaceBody::Clone() const
 	return new SpaceBody(*this);
 }
 
-//void SpaceBody::UseBodyFrame(const Frame& frame)
-//{
-//	if(this->frame != nullptr)
-//	{
-//		delete this->frame;
-//		this->frame = nullptr;
-//	}
-//
-//	this->frame = new Frame(frame);
-//}
-//
-//bool SpaceBody::HasBodyFrame() const
-//{
-//	return frame != nullptr;
-//}
-//
-//const Frame& SpaceBody::GetBodyFrame() const
-//{
-//	return *frame;
-//}
-
 bool SpaceBody::HasIAUFrame() const
 {
 	std::string frameName = "IAU_" + GetSpiceName();

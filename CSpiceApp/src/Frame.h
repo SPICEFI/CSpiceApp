@@ -36,16 +36,14 @@ public:
 	std::string GetSpiceName() const;
 	const std::string& GetName() const;
 
-	//FrameType GetFrameType() const;
-	//long GetCenterObjectId() const;
 	FrameInfo GetFrameInfo() const;
 
-	Vector3 TransformVector(const Vector3& vec, const Time& t, const Frame& ref = Frame::J2000) const;
-	Vector3 AxisX(const Time& t, const Frame& ref = Frame::J2000) const;
-	Vector3 AxisY(const Time& t, const Frame& ref = Frame::J2000) const;
-	Vector3 AxisZ(const Time& t, const Frame& ref = Frame::J2000) const;
+	Vector3 TransformVector(const Vector3& vec, const Time& t, const Frame& ref) const;
+	Vector3 AxisX(const Time& t, const Frame& ref) const;
+	Vector3 AxisY(const Time& t, const Frame& ref) const;
+	Vector3 AxisZ(const Time& t, const Frame& ref) const;
 
-	Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
+	Orientation GetOrientation(const Time& t, const Frame& ref) const;
 
 	bool HasAvailableData() const;
 	bool HasLimitedCoverage() const;

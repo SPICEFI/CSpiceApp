@@ -28,10 +28,6 @@ public:
 
 	virtual SpaceBody* Clone() const;
 
-	//void UseBodyFrame(const Frame& frame);
-	//bool HasBodyFrame() const;
-	//const Frame& GetBodyFrame() const;
-
 	bool HasIAUFrame() const;
 	Frame GetIAUFrame() const;
 	bool HasDefaultFrame() const;
