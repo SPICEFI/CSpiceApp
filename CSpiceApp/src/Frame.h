@@ -5,6 +5,7 @@
 #include "Time.h"
 #include "Orientation.h"
 #include "Window.h"
+#include "Matrix3x3.h"
 
 #define FRAME_NAME_MAX_LENGTH 64
 
@@ -44,6 +45,7 @@ public:
 	Vector3 AxisZ(const Time& t, const Frame& ref) const;
 
 	Orientation GetOrientation(const Time& t, const Frame& ref) const;
+	Matrix3x3 GetTransformationMatrix(const Time& t, const Frame& ref) const;
 
 	bool HasAvailableData() const;
 	bool HasLimitedCoverage() const;

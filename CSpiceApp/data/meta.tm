@@ -54,7 +54,9 @@ KPL/MK
 	PCK kernel with high precision Earth orientation
 \begindata
 
-	KERNELS_TO_LOAD += (	'$BASE/pck/earth_latest_high_prec.bpc' )
+	KERNELS_TO_LOAD += (	'$BASE/pck/earth_720101_070426.bpc',
+							'$BASE/pck/earth_070425_370426_predict.bpc'
+							'$BASE/pck/earth_000101_151203_150911.bpc' )
 
 \begintext
 	PCK kernel with mass constants
@@ -69,7 +71,7 @@ KPL/MK
 	KERNELS_TO_LOAD += (	'$BASE/fk/planets/earth_assoc_itrf93.tf' )
 
 \begintext
-	Test frame
+	Test frame (not loaded)
 begindata
 
 	KERNELS_TO_LOAD += (	'data/frames.fk' )

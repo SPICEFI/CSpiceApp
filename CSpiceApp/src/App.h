@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CSpice.h"
+#include "Matrix3x3.h"
 
 #include <vector>
 #include <string>

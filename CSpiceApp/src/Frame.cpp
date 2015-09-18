@@ -107,6 +107,24 @@ Orientation Frame::GetOrientation(const Time& t, const Frame& ref) const
 	return Orientation(AxisX(t, ref), AxisY(t, ref), AxisZ(t, ref));
 }
 
+Matrix3x3 Frame::GetTransformationMatrix(const Time& t, const Frame& ref) const
+{
+	double transform[3][3];
+	CSPICE_ASSERT(pxform_c(GetSpiceName().c_str(), ref.GetSpiceName().c_str(), t.AsDouble(), transform));
+
+	float fMatrix[3][3];
+
+	for(int i = 0; i < 3; i++)
+	{
+		for(int j = 0; j < 3; j++)
+		{
+			fMatrix[i][j] = static_cast<float>(transform[i][j]);
+		}
+	}
+
+	return Matrix3x3(fMatrix);
+}
+
 bool Frame::HasAvailableData() const
 {
 	long centerId = GetFrameInfo().centerId;

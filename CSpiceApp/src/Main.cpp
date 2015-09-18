@@ -130,6 +130,7 @@ int main()
 							{
 								fout << "\t\tObject does not contain any orientation data" << std::endl;
 							}
+
 							for(size_t i = 0; i < pckIntervals.size(); i++)
 							{
 								Interval interval = pckIntervals[i];
@@ -157,6 +158,20 @@ int main()
 							fout << "\t\tX axis: (" << axisX.x << ", " << axisX.y << ", " << axisX.z << ")" << std::endl;
 							fout << "\t\tY axis: (" << axisY.x << ", " << axisY.y << ", " << axisY.z << ")" << std::endl;
 							fout << "\t\tZ axis: (" << axisZ.x << ", " << axisZ.y << ", " << axisZ.z << ")" << std::endl;
+
+							const Matrix3x3& matrix = bodyFrame.GetTransformationMatrix(t, app.GetReferenceFrame());
+							const float* m = matrix.Get();
+
+							fout << "\t\tTransformation matrix:" << std::endl;
+							for(int row = 0; row < 3; row++)
+							{
+								fout << "\t\t\t";
+								for(int col = 0; col < 3; col++)
+								{
+									fout << *(m + 3 * row + col) << "\t";
+								}
+								fout << std::endl;
+							}
 						}
 						else
 						{
