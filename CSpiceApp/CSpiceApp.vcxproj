@@ -37,6 +37,7 @@
     <ClInclude Include="src\SpaceBody.h" />
     <ClInclude Include="src\SpaceObject.h" />
     <ClInclude Include="src\Time.h" />
+    <ClInclude Include="src\Quantity.h" />
     <ClInclude Include="src\Vector3.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
