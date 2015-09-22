@@ -6,7 +6,7 @@
 #include "CSpiceCore.h"
 #include "Vector3.h"
 #include "Frame.h"
-#include "Time.h"
+#include "Date.h"
 #include "Orientation.h"
 #include "Window.h"
 
@@ -29,8 +29,8 @@ public:
 	std::string GetSpiceName() const;
 	const std::string& GetName() const;
 
-	Vector3 GetPosition(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const;
-	Vector3 GetVelocity(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const;
+	Vector3 GetPosition(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const;
+	Vector3 GetVelocity(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const;
 
 	Window GetCoverage() const;
 

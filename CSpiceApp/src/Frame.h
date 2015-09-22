@@ -2,7 +2,7 @@
 
 #include "CSpiceCore.h"
 #include "Vector3.h"
-#include "Time.h"
+#include "Date.h"
 #include "Orientation.h"
 #include "Window.h"
 #include "Matrix3x3.h"
@@ -39,13 +39,13 @@ public:
 
 	FrameInfo GetFrameInfo() const;
 
-	Vector3 TransformVector(const Vector3& vec, const Time& t, const Frame& ref) const;
-	Vector3 AxisX(const Time& t, const Frame& ref) const;
-	Vector3 AxisY(const Time& t, const Frame& ref) const;
-	Vector3 AxisZ(const Time& t, const Frame& ref) const;
+	Vector3 TransformVector(const Vector3& vec, const Date& t, const Frame& ref) const;
+	Vector3 AxisX(const Date& t, const Frame& ref) const;
+	Vector3 AxisY(const Date& t, const Frame& ref) const;
+	Vector3 AxisZ(const Date& t, const Frame& ref) const;
 
-	Orientation GetOrientation(const Time& t, const Frame& ref) const;
-	Matrix3x3 GetTransformationMatrix(const Time& t, const Frame& ref) const;
+	Orientation GetOrientation(const Date& t, const Frame& ref) const;
+	Matrix3x3 GetTransformationMatrix(const Date& t, const Frame& ref) const;
 
 	bool HasAvailableData() const;
 	bool HasLimitedCoverage() const;

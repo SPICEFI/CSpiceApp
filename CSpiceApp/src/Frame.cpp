@@ -73,7 +73,7 @@ Frame::FrameInfo Frame::GetFrameInfo() const
 	return finfo;
 }
 
-Vector3 Frame::TransformVector(const Vector3& vec, const Time& t, const Frame& ref) const
+Vector3 Frame::TransformVector(const Vector3& vec, const Date& t, const Frame& ref) const
 {
 	double transform[3][3];
 
@@ -87,27 +87,27 @@ Vector3 Frame::TransformVector(const Vector3& vec, const Time& t, const Frame& r
 	return Vector3(axisGlobal);
 }
 
-Vector3 Frame::AxisX(const Time& t, const Frame& ref) const
+Vector3 Frame::AxisX(const Date& t, const Frame& ref) const
 {
 	return TransformVector(Vector3::i, t, ref);
 }
 
-Vector3 Frame::AxisY(const Time& t, const Frame& ref) const
+Vector3 Frame::AxisY(const Date& t, const Frame& ref) const
 {
 	return TransformVector(Vector3::j, t, ref);
 }
 
-Vector3 Frame::AxisZ(const Time& t, const Frame& ref) const
+Vector3 Frame::AxisZ(const Date& t, const Frame& ref) const
 {
 	return TransformVector(Vector3::k, t, ref);
 }
 
-Orientation Frame::GetOrientation(const Time& t, const Frame& ref) const
+Orientation Frame::GetOrientation(const Date& t, const Frame& ref) const
 {
 	return Orientation(AxisX(t, ref), AxisY(t, ref), AxisZ(t, ref));
 }
 
-Matrix3x3 Frame::GetTransformationMatrix(const Time& t, const Frame& ref) const
+Matrix3x3 Frame::GetTransformationMatrix(const Date& t, const Frame& ref) const
 {
 	double transform[3][3];
 	CSPICE_ASSERT(pxform_c(GetSpiceName().c_str(), ref.GetSpiceName().c_str(), t.AsDouble(), transform));

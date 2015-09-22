@@ -6,42 +6,42 @@
 
 #define FORMAT_STRING_BUFFER 1024
 
-class Time
+class Date
 {
 public:
-	Time(double et = 0.0);
-	Time(std::string str);
+	Date(double et = 0.0);
+	Date(std::string str);
 
 	double AsDouble() const;
 	std::string AsString(const std::string& format = "Mon DD YYYY HR:MN:SC (UTC+0) ::UTC+0") const;
 
-	Time operator+(double rhs) const
+	Date operator+(double rhs) const
 	{
-		return Time(etTime + rhs);
+		return Date(etTime + rhs);
 	}
-	Time operator-(double rhs) const
+	Date operator-(double rhs) const
 	{
 		return (*this) + (-rhs);
 	}
-	double operator-(const Time& rhs) const
+	double operator-(const Date& rhs) const
 	{
 		return etTime - rhs.AsDouble();
 	}
-	Time& operator+=(double rhs)
+	Date& operator+=(double rhs)
 	{
 		etTime += rhs;
 		return *this;
 	}
-	Time& operator-=(double rhs)
+	Date& operator-=(double rhs)
 	{
 		etTime -= rhs;
 		return *this;
 	}
-	bool operator<(const Time& rhs) const
+	bool operator<(const Date& rhs) const
 	{
 		return this->AsDouble() < rhs.AsDouble();
 	}
-	bool operator>(const Time& rhs) const
+	bool operator>(const Date& rhs) const
 	{
 		return this->AsDouble() > rhs.AsDouble();
 	}

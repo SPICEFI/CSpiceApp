@@ -63,7 +63,7 @@ const std::string& SpaceObject::GetName() const
 	return name;
 }
 
-Vector3 SpaceObject::GetPosition(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const
+Vector3 SpaceObject::GetPosition(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
 {
 	double etTime = t.AsDouble();
 	long observerId = relativeTo.GetSpiceId();
@@ -80,7 +80,7 @@ Vector3 SpaceObject::GetPosition(const Time& t, const SpaceObject& relativeTo, c
 	return Vector3(position);
 }
 
-Vector3 SpaceObject::GetVelocity(const Time& t, const SpaceObject& relativeTo, const Frame& frame) const
+Vector3 SpaceObject::GetVelocity(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
 {
 	double etTime = t.AsDouble();
 	long observerId = relativeTo.GetSpiceId();

@@ -59,7 +59,7 @@ int main()
 
 			}
 
-			Time t("Aug 17 2000 15:51:01 UTC-5");
+			Date t("Aug 17 2000 15:51:01 UTC-5");
 
 			Window spkCoverage = obj.GetCoverage();
 			std::vector<Interval> spkIntervals = spkCoverage.GetIntervals();
@@ -76,8 +76,8 @@ int main()
 			{
 				Interval interval = spkIntervals[i];
 
-				Time begin(interval.GetLeft());
-				Time end(interval.GetRight());
+				Date begin(interval.GetLeft());
+				Date end(interval.GetRight());
 
 				fout << "\t\t" << begin.AsString() << " - " << end.AsString() << std::endl;
 			}
@@ -135,8 +135,8 @@ int main()
 							{
 								Interval interval = pckIntervals[i];
 
-								Time begin(interval.GetLeft());
-								Time end(interval.GetRight());
+								Date begin(interval.GetLeft());
+								Date end(interval.GetRight());
 
 								fout << "\t\t" << begin.AsString() << " - " << end.AsString() << std::endl;
 							}
