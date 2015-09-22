@@ -1,75 +1,95 @@
 #pragma once
 
+#include <cmath>
+
+double powi(double val, int exp);
+
 template<int length, int time, int mass>
 class Unit
 {
 	typedef Unit<length, time, mass> ThisUnit;
 
+	typedef Unit<1, 0, 0> LengthUnit;
+	typedef Unit<0, 0, 1> MassUnit;
+	typedef Unit<0, 1, 0> TimeUnit;
+
 public:
+	static ThisUnit BaseUnit()
+	{
+		return ThisUnit();
+	}
+	static ThisUnit ScaledUnit(double multiplier, const ThisUnit& ref = ThisUnit())
+	{
+		return ThisUnit(multiplier, ref);
+	}
+	static ThisUnit DerivedUnit(const LengthUnit& lengthUnit, const TimeUnit& timeUnit = TimeUnit::BaseUnit(), const MassUnit& massUnit = MassUnit::BaseUnit())
+	{
+		double totalMultiplier = 1.0;
+
+		totalMultiplier *= powi(lengthUnit.GetMultiplier(), length);
+		totalMultiplier *= powi(timeUnit.GetMultiplier(), time);
+		totalMultiplier *= powi(massUnit.GetMultiplier(), mass);
+
+		return ThisUnit(totalMultiplier);
+	}
+	static ThisUnit DerivedUnit(const TimeUnit& timeUnit, const Unit<0, 0, 1>& massUnit = MassUnit::BaseUnit())
+	{
+		return DerivedUnit(LengthUnit::BaseUnit(), timeUnit, massUnit);
+	}
+	static ThisUnit DerivedUnit(const MassUnit& massUnit)
+	{
+		return DerivedUnit(LengthUnit::BaseUnit(), TimeUnit::BaseUnit(), massUnit);
+	}
+
 	Unit() // constructs base unit
 	{
-		Construct(1.0, 0.0);
+		Construct(1.0);
 	}
 
-	Unit(double multiplier, double offset)
+private:
+	Unit(double multiplier)
 	{
-		Construct(multiplier, offset);
+		Construct(multiplier);
 	}
 
-	Unit(double multiplier, double offset, const ThisUnit& ref)
+	Unit(double multiplier, const ThisUnit& ref)
 	{
 		double rmultiplier = ref.GetMultiplier();
-		double roffset = ref.GetOffset();
 
-		Construct(multiplier * rmultiplier, rmultiplier * offset + roffset);
+		Construct(multiplier * rmultiplier);
 	}
 
+public:
 	double GetMultiplier() const
 	{
 		return multiplier;
 	}
 
-	double GetOffset() const
-	{
-		return offset;
-	}
-
 	static double Convert(double value, const ThisUnit& from, const ThisUnit& to)
 	{
 		double fmultiplier = from.GetMultiplier();
-		double foffset = from.GetOffset();
 		double tmultiplier = to.GetMultiplier();
-		double toffset = to.GetOffset();
 
-		double valInBase = fmultiplier * value + foffset;
-
-		return (valInBase - toffset) / tmultiplier;
+		return value * (fmultiplier / tmultiplier);
 	}
 
 private:
-	void Construct(double multiplier, double offset)
+	void Construct(double multiplier)
 	{
 		this->multiplier = multiplier;
-		this->offset = offset;
 	}
 
 private:
-	// Unit us represented as a linear relation to the base unit
-	// Say, BASE is a quantity in base unit (say, meter) and DERIVED is a quantity in some other unit (say, kilometer), then BASE = multiplier * DERIVED + offset
 	double multiplier;
-	double offset;
 };
 
 template<int length, int time, int mass>
 class Quantity
 {
 	typedef Unit<length, time, mass> CurrentUnit;
+	typedef Quantity<length, time, mass> ThisQuantity;
 
 public:
-	Quantity(double value)
-	{
-		Construct(value, GetBasicUnit());
-	}
 	Quantity(double value, const CurrentUnit& unit)
 	{
 		Construct(value, unit);
@@ -81,12 +101,26 @@ public:
 	}
 	double ValueInBase() const
 	{
-		return ValueIn(GetBaseUnit());
+		return ValueIn(CurrentUnit::BaseUnit());
 	}
 
-	static const CurrentUnit& GetBaseUnit()
+	ThisQuantity& operator+=(const ThisQuantity& rhs)
 	{
-		return CurrentUnit();
+		value += rhs.ValueIn(unit);
+
+		return *this;
+	}
+	ThisQuantity& operator-=(const ThisQuantity& rhs)
+	{
+		value -= rhs.ValueIn(unit);
+
+		return *this;
+	}
+	ThisQuantity& operator*=(double rhs)
+	{
+		value *= rhs;
+
+		return *this;
 	}
 
 private:
@@ -100,17 +134,93 @@ private:
 	double value;
 	CurrentUnit unit;
 
-public:
+	template<int l, int t, int m>
+	friend Quantity<l, t, m> operator+(const Quantity<l, t, m>& lhs, const Quantity<l, t, m>& rhs)
+	{
+		double newValue = lhs.value + rhs.ValueIn(lhs.unit);
+
+		return Quantity(newValue, lhs.unit);
+	}
+	template<int l, int t, int m>
+	friend Quantity<l, t, m> operator-(const Quantity<l, t, m>& op)
+	{
+		return (-1.0) * op;
+	}
+	template<int l, int t, int m>
+	friend Quantity<l, t, m> operator-(const Quantity<l, t, m>& lhs, const Quantity<l, t, m>& rhs)
+	{
+		return lhs + (-rhs);
+	}
+	template<int l, int t, int m>
+	friend Quantity<l, t, m> operator*(const Quantity<l, t, m>& lhs, double rhs)
+	{
+		return Quantity(lhs.value * rhs, lhs.unit);
+	}
+	template<int l, int t, int m>
+	friend Quantity<l, t, m> operator*(double lhs, const Quantity<l, t, m>& rhs)
+	{
+		return rhs * lhs;
+	}
+	template<int l, int t, int m>
+	friend double operator/(Quantity<l, t, m> lhs, const Quantity<l, t, m>& rhs)
+	{
+		return lhs.value / rhs.ValueIn(lhs.unit);
+	}
 };
 
+
 typedef Quantity<1, 0, 0> Length;
-typedef Unit<1, 0, 0> LengthUnit;
-
 typedef Quantity<0, 1, 0> Time;
-typedef Unit<0, 1, 0> TimeUnit;
-
-typedef Quantity<1, -1, 0> Velocity;
-typedef Unit<1, -1, 0> VelocityUnit;
-
 typedef Quantity<0, 0, 1> Mass;
+typedef Quantity<1, -1, 0> Velocity;
+typedef Quantity<3, -2, 0> GravitationalParameter;
+
+typedef Unit<1, 0, 0> LengthUnit;
+typedef Unit<0, 1, 0> TimeUnit;
 typedef Unit<0, 0, 1> MassUnit;
+typedef Unit<1, -1, 0> VelocityUnit;
+typedef Unit<3, -2, 0> GravitationalParameterUnit;
+
+namespace Units
+{
+	class Metric
+	{
+	public:
+		static const LengthUnit centimeters;
+		static const LengthUnit meters;
+		static const LengthUnit kilometers;
+
+		static const MassUnit grams;
+		static const MassUnit kilograms;
+		static const MassUnit tons;
+
+		static const VelocityUnit kmph;
+		static const VelocityUnit mps;
+	};
+
+	class Imperial
+	{
+	public:
+		static const LengthUnit inches;
+		static const LengthUnit feet;
+		static const LengthUnit yards;
+		static const LengthUnit miles;
+
+		static const MassUnit ounces;
+		static const MassUnit pounds;
+		static const MassUnit tons;
+
+		static const VelocityUnit mph;
+	};
+
+	class Common
+	{
+	public:
+		static const TimeUnit seconds;
+		static const TimeUnit minutes;
+		static const TimeUnit hours;
+		static const TimeUnit days;
+
+		static const GravitationalParameterUnit gm;
+	};
+}
