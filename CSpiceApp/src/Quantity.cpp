@@ -18,6 +18,7 @@ double powi(double val, int exp)
 	return result;
 }
 
+// Common
 const TimeUnit Units::Common::seconds = TimeUnit::BaseUnit();
 const TimeUnit Units::Common::minutes = TimeUnit::ScaledUnit(60.0, Units::Common::seconds);
 const TimeUnit Units::Common::hours = TimeUnit::ScaledUnit(60.0, Units::Common::minutes);
@@ -35,6 +36,8 @@ const MassUnit Units::Metric::tons = MassUnit::ScaledUnit(1000.0, Units::Metric:
 const VelocityUnit Units::Metric::kmph = VelocityUnit::DerivedUnit(Units::Metric::kilometers, Units::Common::hours);
 const VelocityUnit Units::Metric::mps = VelocityUnit::DerivedUnit(Units::Metric::meters, Units::Common::seconds);
 
+const AccelerationUnit Units::Metric::ms2 = AccelerationUnit::DerivedUnit(Units::Metric::meters, Units::Common::seconds);
+
 // Imperial
 const LengthUnit Units::Imperial::inches = LengthUnit::ScaledUnit(0.0254, Units::Metric::meters);
 const LengthUnit Units::Imperial::feet = LengthUnit::ScaledUnit(0.3048, Units::Metric::meters);
@@ -48,5 +51,4 @@ const MassUnit Units::Imperial::tons = MassUnit::ScaledUnit(2240.0, Units::Imper
 const VelocityUnit Units::Imperial::mph = VelocityUnit::DerivedUnit(Units::Imperial::miles, Units::Common::hours);
 
 // Common
-
-const GravitationalParameterUnit Units::Common::gm = GravitationalParameterUnit::DerivedUnit(Units::Metric::kilometers, Units::Common::seconds);
+const GravitationalParameterUnit Units::Metric::gm = GravitationalParameterUnit::DerivedUnit(Units::Metric::kilometers, Units::Common::seconds);

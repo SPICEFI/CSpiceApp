@@ -3,6 +3,7 @@
 #include <string>
 
 #include "CSpiceCore.h"
+#include "Quantity.h"
 
 #define FORMAT_STRING_BUFFER 1024
 
@@ -44,6 +45,26 @@ public:
 	bool operator>(const Date& rhs) const
 	{
 		return this->AsDouble() > rhs.AsDouble();
+	}
+	Date operator+(const Time& rhs) const
+	{
+		return *this + rhs.ValueIn(Units::Common::seconds);
+	}
+	Date operator-(const Time& rhs) const
+	{
+		return *this - rhs.ValueIn(Units::Common::seconds);
+	}
+	Date& operator+=(const Time& rhs)
+	{
+		etTime += rhs.ValueIn(Units::Common::seconds);
+
+		return *this;
+	}
+	Date& operator-=(const Time& rhs)
+	{
+		etTime -= rhs.ValueIn(Units::Common::seconds);
+
+		return *this;
 	}
 
 public:

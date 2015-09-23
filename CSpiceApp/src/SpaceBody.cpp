@@ -139,7 +139,7 @@ double SpaceBody::GetSingleDimParam(BulkParameter param) const
 
 	case BP_GM:
 		CSPICE_ASSERT( bodvcd_c(spiceId, "GM", 1, &dim, &value) );
-		value *= 1000.0 * 1000.0 * 1000.0; // km^3 -> m^3
+		//value *= 1000.0 * 1000.0 * 1000.0; // km^3 -> m^3
 		break;
 
 	case BP_MASS:
@@ -167,8 +167,8 @@ std::vector<double> SpaceBody::GetMultiDimParam(BulkParameter param) const
 	case BP_RADIUS:
 		double radii[3];
 		CSPICE_ASSERT( bodvcd_c(spiceId, "RADII", 3, &dim, radii) );
-		for(int i = 0; i < 3; i++)
-			radii[i] *= 1000.0; // km -> m
+		//for(int i = 0; i < 3; i++)
+		//	radii[i] *= 1000.0; // km -> m
 		for(int i = 0; i < 3; i++)
 			values.push_back(radii[i]);
 		break;
@@ -197,4 +197,44 @@ std::vector<double> SpaceBody::GetMultiDimParam(BulkParameter param) const
 	}
 
 	return values;
+}
+
+Length SpaceBody::GetRadius() const
+{
+	double value = GetSingleDimParam(BP_RADIUS);
+
+	return Length(value, Units::Metric::kilometers);
+}
+
+std::array<Length, 3> SpaceBody::GetRadii() const
+{
+	std::array<Length, 3> radii;
+	std::vector<double> values = GetMultiDimParam(BP_RADIUS);
+	for(int i = 0; i < 3; i++)
+	{
+		radii[i] = Length(values[i], Units::Metric::kilometers);
+	}
+
+	return radii;
+}
+
+GravitationalParameter SpaceBody::GetGM() const
+{
+	double value = GetSingleDimParam(BP_GM);
+
+	return GravitationalParameter(value, Units::Metric::gm);
+}
+
+Mass SpaceBody::GetMass() const
+{
+	double value = GetSingleDimParam(BP_MASS);
+
+	return Mass(value, Units::Metric::kilograms);
+}
+
+Acceleration SpaceBody::GetSurfaceAcceleration() const
+{
+	double value = GetSingleDimParam(BP_ACC);
+
+	return Acceleration(value, AccelerationUnit::DerivedUnit(Units::Metric::kilometers, Units::Common::seconds));
 }

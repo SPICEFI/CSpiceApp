@@ -90,6 +90,10 @@ class Quantity
 	typedef Quantity<length, time, mass> ThisQuantity;
 
 public:
+	Quantity()
+	{
+		Construct(0.0, CurrentUnit::BaseUnit());
+	}
 	Quantity(double value, const CurrentUnit& unit)
 	{
 		Construct(value, unit);
@@ -134,37 +138,39 @@ private:
 	double value;
 	CurrentUnit unit;
 
-	template<int l, int t, int m>
-	friend Quantity<l, t, m> operator+(const Quantity<l, t, m>& lhs, const Quantity<l, t, m>& rhs)
+	friend Quantity operator+(const Quantity& lhs, const Quantity& rhs)
 	{
 		double newValue = lhs.value + rhs.ValueIn(lhs.unit);
 
 		return Quantity(newValue, lhs.unit);
 	}
-	template<int l, int t, int m>
-	friend Quantity<l, t, m> operator-(const Quantity<l, t, m>& op)
+	friend Quantity operator-(const Quantity& op)
 	{
 		return (-1.0) * op;
 	}
-	template<int l, int t, int m>
-	friend Quantity<l, t, m> operator-(const Quantity<l, t, m>& lhs, const Quantity<l, t, m>& rhs)
+	friend Quantity operator-(const Quantity& lhs, const Quantity& rhs)
 	{
 		return lhs + (-rhs);
 	}
-	template<int l, int t, int m>
-	friend Quantity<l, t, m> operator*(const Quantity<l, t, m>& lhs, double rhs)
+	friend Quantity operator*(const Quantity& lhs, double rhs)
 	{
 		return Quantity(lhs.value * rhs, lhs.unit);
 	}
-	template<int l, int t, int m>
-	friend Quantity<l, t, m> operator*(double lhs, const Quantity<l, t, m>& rhs)
+	friend Quantity operator*(double lhs, const Quantity& rhs)
 	{
 		return rhs * lhs;
 	}
-	template<int l, int t, int m>
-	friend double operator/(Quantity<l, t, m> lhs, const Quantity<l, t, m>& rhs)
+	friend double operator/(const Quantity& lhs, const Quantity& rhs)
 	{
 		return lhs.value / rhs.ValueIn(lhs.unit);
+	}
+	friend bool operator>(const Quantity& lhs, const Quantity& rhs)
+	{
+		return lhs.ValueInBase() > lhs.ValueInBase();
+	}
+	friend bool operator<(const Quantity& lhs, const Quantity& rhs)
+	{
+		return lhs.ValueInBase() < lhs.ValueInBase();
 	}
 };
 
@@ -173,12 +179,14 @@ typedef Quantity<1, 0, 0> Length;
 typedef Quantity<0, 1, 0> Time;
 typedef Quantity<0, 0, 1> Mass;
 typedef Quantity<1, -1, 0> Velocity;
+typedef Quantity<1, -2, 0> Acceleration;
 typedef Quantity<3, -2, 0> GravitationalParameter;
 
 typedef Unit<1, 0, 0> LengthUnit;
 typedef Unit<0, 1, 0> TimeUnit;
 typedef Unit<0, 0, 1> MassUnit;
 typedef Unit<1, -1, 0> VelocityUnit;
+typedef Unit<1, -2, 0> AccelerationUnit;
 typedef Unit<3, -2, 0> GravitationalParameterUnit;
 
 namespace Units
@@ -196,6 +204,10 @@ namespace Units
 
 		static const VelocityUnit kmph;
 		static const VelocityUnit mps;
+
+		static const AccelerationUnit ms2;
+
+		static const GravitationalParameterUnit gm;
 	};
 
 	class Imperial
@@ -220,7 +232,5 @@ namespace Units
 		static const TimeUnit minutes;
 		static const TimeUnit hours;
 		static const TimeUnit days;
-
-		static const GravitationalParameterUnit gm;
 	};
 }

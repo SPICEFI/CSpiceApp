@@ -40,16 +40,16 @@ int main()
 				fout << "Bulk parameters:" << std::endl;
 
 				if(body.HasParameter(SpaceBody::BP_MASS))
-					fout << "\tMass: " << body.GetSingleDimParam(SpaceBody::BP_MASS) << " kg" << std::endl;
+					fout << "\tMass: " << body.GetMass().ValueIn(Units::Metric::kilograms) << " kg" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_GM))
-					fout << "\tGM: " << body.GetSingleDimParam(SpaceBody::BP_GM) << " m^3 / s^2" << std::endl;
+					fout << "\tGM: " << body.GetGM().ValueIn(Units::Metric::gm) << " km^3 / s^(-2)" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_ACC))
-					fout << "\tg: " << body.GetSingleDimParam(SpaceBody::BP_ACC) << " m / s^2" << std::endl;
+					fout << "\tg: " << body.GetSurfaceAcceleration().ValueIn(Units::Metric::ms2) << " m / s^2" << std::endl;
 				if(body.HasParameter(SpaceBody::BP_RADIUS))
 				{
-					double radius = body.GetSingleDimParam(SpaceBody::BP_RADIUS);
-					std::vector<double> radii = body.GetMultiDimParam(SpaceBody::BP_RADIUS);
-					fout << "\tRadius: " << radius << " (" << radii[0] << ", " << radii[1] << ", " << radii[2] << ") m" << std::endl;
+					Length radius = body.GetRadius();
+					std::array<Length, 3> radii = body.GetRadii();
+					fout << "\tRadius: " << radius.ValueIn(Units::Metric::kilometers) << " (" << radii[0].ValueIn(Units::Metric::kilometers) << ", " << radii[1].ValueIn(Units::Metric::kilometers) << ", " << radii[2].ValueIn(Units::Metric::kilometers) << ") km" << std::endl;
 				}
 
 				fout << std::endl;
@@ -60,6 +60,7 @@ int main()
 			}
 
 			Date t("Aug 17 2000 15:51:01 UTC-5");
+			t += Time(1.0, Units::Common::days);
 
 			Window spkCoverage = obj.GetCoverage();
 			std::vector<Interval> spkIntervals = spkCoverage.GetIntervals();

@@ -1,10 +1,5 @@
 #include "Date.h"
 
-const double Date::second = 1.0;
-const double Date::minute = 60.0 * Date::second;
-const double Date::hour = 60.0 * Date::minute;
-const double Date::day = 24.0 * Date::hour;
-
 Date::Date(double et)
 {
 	etTime = et;

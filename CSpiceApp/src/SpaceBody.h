@@ -1,8 +1,10 @@
 #pragma once
 
 #include "SpaceObject.h"
+#include "Quantity.h"
 
 #include <vector>
+#include <array>
 
 #define G 6.67384E-11
 
@@ -39,6 +41,12 @@ public:
 
 	double GetSingleDimParam(BulkParameter param) const;
 	std::vector<double> GetMultiDimParam(BulkParameter param) const;
+
+	Length GetRadius() const;
+	std::array<Length, 3> GetRadii() const;
+	GravitationalParameter GetGM() const;
+	Mass GetMass() const;
+	Acceleration GetSurfaceAcceleration() const;
 
 private:
 	void Init();
