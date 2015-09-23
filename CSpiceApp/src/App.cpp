@@ -16,9 +16,10 @@ App::~App()
 	objects.clear();
 }
 
-void App::Init() const
+void App::Init()
 {
 	CSpiceUtil::SetErrorHandlingParams("return", "null");
+	SetDefaultUnits(UT_DEFAULT);
 }
 
 void App::LoadKernel(const std::string& file) const
@@ -39,6 +40,61 @@ void App::SetReferenceFrame(const Frame& ref)
 const Frame& App::GetReferenceFrame() const
 {
 	return refFrame;
+}
+
+void App::SetDefaultUnits(UnitsType units)
+{
+	this->units.accUnit = Units::Metric::ms2;
+	this->units.gmUnit = Units::Metric::gm;
+
+	switch(units)
+	{
+	case UT_DEFAULT:
+		this->units.lengthUnit = Units::Metric::kilometers;
+		this->units.velocityUnit = Units::Metric::kmps;
+		this->units.massUnit = Units::Metric::kilograms;
+		break;
+	case UT_IMPERIAL:
+		this->units.lengthUnit = Units::Imperial::miles;
+		this->units.velocityUnit = Units::Imperial::mph;
+		this->units.massUnit = Units::Imperial::pounds;
+		break;
+	case UT_METRIC:
+		this->units.lengthUnit = Units::Metric::meters;
+		this->units.velocityUnit = Units::Metric::mps;
+		this->units.massUnit = Units::Metric::kilograms;
+		break;
+	}
+}
+
+const LengthUnit& App::LengthUnit() const
+{
+	return units.lengthUnit;
+}
+
+const VelocityUnit& App::VelocityUnit() const
+{
+	return units.velocityUnit;
+}
+
+const MassUnit& App::MassUnit() const
+{
+	return units.massUnit;
+}
+
+const GravitationalParameterUnit& App::GMUnit() const
+{
+	return units.gmUnit;
+}
+
+const AccelerationUnit& App::AccelerationUnit() const
+{
+	return units.accUnit;
+}
+
+void App::SetIndividualUnits(const DefaultUnits& defUnits)
+{
+	std::memcpy(&this->units, &defUnits, sizeof(DefaultUnits));
 }
 
 void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursive)

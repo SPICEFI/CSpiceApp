@@ -63,7 +63,7 @@ const std::string& SpaceObject::GetName() const
 	return name;
 }
 
-Vector3 SpaceObject::GetPosition(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
+Vector3T<Length> SpaceObject::GetPosition(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
 {
 	double etTime = t.AsDouble();
 	long observerId = relativeTo.GetSpiceId();
@@ -74,13 +74,14 @@ Vector3 SpaceObject::GetPosition(const Date& t, const SpaceObject& relativeTo, c
 
 	CSPICE_ASSERT( spkgps_c(this->spiceId, etTime, frameName.c_str(), observerId, position, &lt) );
 
+	Length pos[3];
 	for(int i = 0; i < 3; i++)
-		position[i] *= 1000.0; // km -> m
+		pos[i] = Length(position[i], Units::Metric::kilometers);
 
-	return Vector3(position);
+	return Vector3T<Length>(pos);
 }
 
-Vector3 SpaceObject::GetVelocity(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
+Vector3T<Velocity> SpaceObject::GetVelocity(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const
 {
 	double etTime = t.AsDouble();
 	long observerId = relativeTo.GetSpiceId();
@@ -91,10 +92,13 @@ Vector3 SpaceObject::GetVelocity(const Date& t, const SpaceObject& relativeTo, c
 
 	CSPICE_ASSERT(spkgeo_c(this->spiceId, etTime, frameName.c_str(), observerId, state, &lt));
 
-	for(int i = 0; i < 6; i++)
-		state[i] *= 1000.0; // km -> m
+	Velocity vel[3];
+	for(int i = 0; i < 3; i++)
+	{
+		vel[i] = Velocity(state[i+3], Units::Metric::kmps);
+	}
 
-	return Vector3(&state[3]);
+	return Vector3T<Velocity>(vel);
 }
 
 Window SpaceObject::GetCoverage() const

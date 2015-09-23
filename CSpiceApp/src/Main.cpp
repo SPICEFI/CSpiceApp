@@ -13,6 +13,9 @@ int main()
 		app.LoadKernel("data/meta.tm");
 
 		app.SetReferenceFrame(Frame::ECLIPJ2000); // Set reference frame to ECLIPJ200, default is J2000
+		app.SetDefaultUnits(App::UT_DEFAULT); // This is set by default
+		//app.SetDefaultUnits(App::UT_METRIC);
+		//app.SetDefaultUnits(App::UT_IMPERIAL);
 
 		app.LoadChildren(SpaceObject("Solar system barycenter"), true, true);
 
@@ -40,16 +43,16 @@ int main()
 				fout << "Bulk parameters:" << std::endl;
 
 				if(body.HasParameter(SpaceBody::BP_MASS))
-					fout << "\tMass: " << body.GetMass().ValueIn(Units::Metric::kilograms) << " kg" << std::endl;
+					fout << "\tMass: " << body.GetMass().ValueIn(app.MassUnit()) << " " << app.MassUnit().str() << std::endl;
 				if(body.HasParameter(SpaceBody::BP_GM))
-					fout << "\tGM: " << body.GetGM().ValueIn(Units::Metric::gm) << " km^3 / s^(-2)" << std::endl;
+					fout << "\tGM: " << body.GetGM().ValueIn(app.GMUnit()) << " " << app.GMUnit().str() << std::endl;
 				if(body.HasParameter(SpaceBody::BP_ACC))
-					fout << "\tg: " << body.GetSurfaceAcceleration().ValueIn(Units::Metric::ms2) << " m / s^2" << std::endl;
+					fout << "\tg: " << body.GetSurfaceAcceleration().ValueIn(app.AccelerationUnit()) << " " << app.AccelerationUnit().str() << std::endl;
 				if(body.HasParameter(SpaceBody::BP_RADIUS))
 				{
 					Length radius = body.GetRadius();
 					std::array<Length, 3> radii = body.GetRadii();
-					fout << "\tRadius: " << radius.ValueIn(Units::Metric::kilometers) << " (" << radii[0].ValueIn(Units::Metric::kilometers) << ", " << radii[1].ValueIn(Units::Metric::kilometers) << ", " << radii[2].ValueIn(Units::Metric::kilometers) << ") km" << std::endl;
+					fout << "\tRadius: " << radius.ValueIn(app.LengthUnit()) << " (" << radii[0].ValueIn(app.LengthUnit()) << ", " << radii[1].ValueIn(app.LengthUnit()) << ", " << radii[2].ValueIn(app.LengthUnit()) << ") " << app.LengthUnit().str() << std::endl;
 				}
 
 				fout << std::endl;
@@ -88,14 +91,11 @@ int main()
 
 			if(spkCoverage.IsIncluded(t.AsDouble()))
 			{
-				Vector3 pos = obj.GetPosition(t, SpaceObject::SSB, app.GetReferenceFrame());
-				Vector3 vel = obj.GetVelocity(t, SpaceObject::SSB, app.GetReferenceFrame());
+				Vector3T<Length> pos = obj.GetPosition(t, SpaceObject::SSB, app.GetReferenceFrame());
+				Vector3T<Velocity> vel = obj.GetVelocity(t, SpaceObject::SSB, app.GetReferenceFrame());
 
-				fout << "\t\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m" << std::endl;
-				fout << "\t\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s" << std::endl;
-
-				//fout << "\t\tPos: (" << pos.x << ", " << pos.y << ", " << pos.z << ") m, abs=" << pos.Length() << " m" << std::endl;
-				//fout << "\t\tVel: (" << vel.x << ", " << vel.y << ", " << vel.z << ") m/s, abs=" << vel.Length() << " m/s" << std::endl;
+				fout << "\t\tPos: " << pos.Length().ValueIn(app.LengthUnit()) << " (" << pos.x.ValueIn(app.LengthUnit()) << ", " << pos.y.ValueIn(app.LengthUnit()) << ", " << pos.z.ValueIn(app.LengthUnit()) << ") " << app.LengthUnit().str() << std::endl;
+				fout << "\t\tVel: " << vel.Length().ValueIn(app.VelocityUnit()) << " (" << vel.x.ValueIn(app.VelocityUnit()) << ", " << vel.y.ValueIn(app.VelocityUnit()) << ", " << vel.z.ValueIn(app.VelocityUnit()) << ") " << app.VelocityUnit().str() << std::endl;
 			}
 			else
 			{

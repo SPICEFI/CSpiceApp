@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <string>
 
 double powi(double val, int exp);
 
@@ -14,15 +15,15 @@ class Unit
 	typedef Unit<0, 1, 0> TimeUnit;
 
 public:
-	static ThisUnit BaseUnit()
+	static ThisUnit BaseUnit(const std::string& label = "")
 	{
-		return ThisUnit();
+		return ThisUnit(label);
 	}
-	static ThisUnit ScaledUnit(double multiplier, const ThisUnit& ref = ThisUnit())
+	static ThisUnit ScaledUnit(double multiplier, const ThisUnit& ref = ThisUnit(), const std::string& label = "")
 	{
-		return ThisUnit(multiplier, ref);
+		return ThisUnit(multiplier, ref, label);
 	}
-	static ThisUnit DerivedUnit(const LengthUnit& lengthUnit, const TimeUnit& timeUnit = TimeUnit::BaseUnit(), const MassUnit& massUnit = MassUnit::BaseUnit())
+	static ThisUnit DerivedUnit(const LengthUnit& lengthUnit, const TimeUnit& timeUnit, const MassUnit& massUnit, const std::string& label = "")
 	{
 		double totalMultiplier = 1.0;
 
@@ -30,39 +31,57 @@ public:
 		totalMultiplier *= powi(timeUnit.GetMultiplier(), time);
 		totalMultiplier *= powi(massUnit.GetMultiplier(), mass);
 
-		return ThisUnit(totalMultiplier);
+		return ThisUnit(totalMultiplier, label);
 	}
-	static ThisUnit DerivedUnit(const TimeUnit& timeUnit, const Unit<0, 0, 1>& massUnit = MassUnit::BaseUnit())
+	static ThisUnit DerivedUnit(const LengthUnit& lengthUnit, const TimeUnit& timeUnit, const std::string& label = "")
 	{
-		return DerivedUnit(LengthUnit::BaseUnit(), timeUnit, massUnit);
+		return DerivedUnit(lengthUnit, timeUnit, MassUnit::BaseUnit(), label);
 	}
-	static ThisUnit DerivedUnit(const MassUnit& massUnit)
+	static ThisUnit DerivedUnit(const TimeUnit& timeUnit, const MassUnit& massUnit, const std::string& label = "")
 	{
-		return DerivedUnit(LengthUnit::BaseUnit(), TimeUnit::BaseUnit(), massUnit);
+		return DerivedUnit(LengthUnit::BaseUnit(), timeUnit, massUnit, label);
 	}
+	static ThisUnit DerivedUnit(const LengthUnit& lengthUnit, const MassUnit& massUnit, const std::string& label = "")
+	{
+		return DerivedUnit(lengthUnit, TimeUnit::BaseUnit(), massUnit, label);
+	}
+	//static ThisUnit DerivedUnit(const MassUnit& massUnit, const std::string& label = "")
+	//{
+	//	return DerivedUnit(LengthUnit::BaseUnit(), TimeUnit::BaseUnit(), massUnit, label);
+	//}
 
-	Unit() // constructs base unit
+	Unit(const std::string& label = "") // constructs base unit
 	{
-		Construct(1.0);
+		Construct(1.0, label);
 	}
 
 private:
-	Unit(double multiplier)
+	Unit(double multiplier, const std::string& label)
 	{
-		Construct(multiplier);
+		Construct(multiplier, label);
 	}
 
-	Unit(double multiplier, const ThisUnit& ref)
+	Unit(double multiplier, const ThisUnit& ref, const std::string& label)
 	{
 		double rmultiplier = ref.GetMultiplier();
 
-		Construct(multiplier * rmultiplier);
+		Construct(multiplier * rmultiplier, label);
 	}
 
 public:
 	double GetMultiplier() const
 	{
 		return multiplier;
+	}
+
+	void SetLabel(const std::string& label)
+	{
+		this->label = label;
+	}
+
+	const std::string& str() const
+	{
+		return this->label;
 	}
 
 	static double Convert(double value, const ThisUnit& from, const ThisUnit& to)
@@ -74,13 +93,15 @@ public:
 	}
 
 private:
-	void Construct(double multiplier)
+	void Construct(double multiplier, const std::string& label)
 	{
 		this->multiplier = multiplier;
+		this->label = label;
 	}
 
 private:
 	double multiplier;
+	std::string label;
 };
 
 template<int length, int time, int mass>
@@ -203,6 +224,7 @@ namespace Units
 		static const MassUnit tons;
 
 		static const VelocityUnit kmph;
+		static const VelocityUnit kmps;
 		static const VelocityUnit mps;
 
 		static const AccelerationUnit ms2;

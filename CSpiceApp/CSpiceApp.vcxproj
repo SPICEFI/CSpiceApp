@@ -24,6 +24,7 @@
     <ClCompile Include="src\SpaceObject.cpp" />
     <ClCompile Include="src\Date.cpp" />
     <ClCompile Include="src\Vector3.cpp" />
+    <ClCompile Include="src\Vector3T.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -40,6 +41,7 @@
     <ClInclude Include="src\Date.h" />
     <ClInclude Include="src\Quantity.h" />
     <ClInclude Include="src\Vector3.h" />
+    <ClInclude Include="src\Vector3T.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
