@@ -25,7 +25,7 @@ int main()
 		for(size_t i = 0; i < kernels.size(); i++)
 		{
 			KernelData kData = kernels[i];
-			fout << "\t" << kData.filename << "(" << kData.type << ")" << std::endl;
+			fout << "\t" << kData.filename << " (" << kData.type << ")" << std::endl;
 		}
 		fout << std::endl;
 
