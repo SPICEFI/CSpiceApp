@@ -32,7 +32,7 @@ int main()
 		size_t objectsCount = app.GetObjectsLength();
 		for(size_t i = 0; i < objectsCount; i++)
 		{
-			const SpaceObject& obj = app.GetObject(i);
+			const SpaceObject& obj = app.GetObjectByIndex(i);
 
 			fout << obj.GetName() << " summary:" << std::endl;
 

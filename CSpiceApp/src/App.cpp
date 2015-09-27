@@ -144,11 +144,16 @@ void App::LoadSolarSystem(bool onlyPlanets)
 
 void App::AddObject(const SpaceObject& obj)
 {
-	try
-	{
-		FindObject(obj);
-	}
-	catch(const std::runtime_error&)
+	//try
+	//{
+	//	FindObject(obj);
+	//}
+	//catch(const std::runtime_error&)
+	//{
+	//	objects.push_back(obj.Clone());
+	//}
+
+	if(FindObject(obj) == false)
 	{
 		objects.push_back(obj.Clone());
 	}
@@ -159,33 +164,60 @@ size_t App::GetObjectsLength() const
 	return objects.size();
 }
 
-SpaceObject& App::GetObject(size_t idx)
+SpaceObject& App::GetObjectByIndex(size_t idx)
 {
 	return *objects[idx];
 }
 
-SpaceObject& App::FindObject(long id)
+bool App::FindObject(long id)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
 		if(objects[i]->GetSpiceId() == id)
-			return *objects[i];
+			return true;
+	}
+
+	return false;
+}
+
+bool App::FindObject(const std::string& name)
+{
+	for(size_t i = 0; i < objects.size(); i++)
+	{
+		if(objects[i]->GetName() == name)
+			return true;
+	}
+
+	return FindObject(SpaceObject(name));
+}
+
+bool App::FindObject(const SpaceObject& sample)
+{
+	return FindObject(sample.GetSpiceId());
+}
+
+SpaceObject& App::GetObject(long id)
+{
+	for(size_t i = 0; i < objects.size(); i++)
+	{
+		if(objects[i]->GetSpiceId() == id)
+			return GetObjectByIndex(i);
 	}
 
 	throw std::runtime_error("FindObject haven't found requested object");
 }
 
-SpaceObject& App::FindObject(const std::string& name)
+SpaceObject& App::GetObject(const std::string& name)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
 		if(objects[i]->GetName() == name)
-			return *objects[i];
+			return GetObjectByIndex(i);
 	}
 
 	try
 	{
-		return FindObject(SpaceObject(name));
+		return GetObject(SpaceObject(name));
 	}
 	catch(const std::runtime_error&)
 	{
@@ -193,7 +225,7 @@ SpaceObject& App::FindObject(const std::string& name)
 	}
 }
 
-SpaceObject& App::FindObject(const SpaceObject& sample)
+SpaceObject& App::GetObject(const SpaceObject& sample)
 {
-	return FindObject(sample.GetSpiceId());
+	return GetObject(sample.GetSpiceId());
 }
