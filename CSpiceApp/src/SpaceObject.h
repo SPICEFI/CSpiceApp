@@ -31,7 +31,9 @@ public:
 	const std::string& GetName() const;
 
 	Vector3T<Length> GetPosition(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const;
+	Vector3T<Length> GetPosition(const Date& t, const Frame& frame) const;
 	Vector3T<Velocity> GetVelocity(const Date& t, const SpaceObject& relativeTo, const Frame& frame) const;
+	Vector3T<Velocity> GetVelocity(const Date& t, const Frame& frame) const;
 
 	Window GetCoverage() const;
 

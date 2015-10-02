@@ -91,8 +91,8 @@ int main()
 
 			if(spkCoverage.IsIncluded(t.AsDouble()))
 			{
-				Vector3T<Length> pos = obj.GetPosition(t, SpaceObject::SSB, app.GetReferenceFrame());
-				Vector3T<Velocity> vel = obj.GetVelocity(t, SpaceObject::SSB, app.GetReferenceFrame());
+				Vector3T<Length> pos = obj.GetPosition(t, app.GetReferenceFrame());
+				Vector3T<Velocity> vel = obj.GetVelocity(t, app.GetReferenceFrame());
 
 				fout << "\t\tPos: " << pos.Length().ValueIn(app.LengthUnit()) << " (" << pos.x.ValueIn(app.LengthUnit()) << ", " << pos.y.ValueIn(app.LengthUnit()) << ", " << pos.z.ValueIn(app.LengthUnit()) << ") " << app.LengthUnit().str() << std::endl;
 				fout << "\t\tVel: " << vel.Length().ValueIn(app.VelocityUnit()) << " (" << vel.x.ValueIn(app.VelocityUnit()) << ", " << vel.y.ValueIn(app.VelocityUnit()) << ", " << vel.z.ValueIn(app.VelocityUnit()) << ") " << app.VelocityUnit().str() << std::endl;
