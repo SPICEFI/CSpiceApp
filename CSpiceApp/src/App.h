@@ -51,21 +51,31 @@ public:
 	const GravitationalParameterUnit& GMUnit() const;
 	const AccelerationUnit& AccelerationUnit() const;
 
-	void LoadChildren(const SpaceObject& parent, bool includeSelf = false, bool recursive = true);
-	void LoadSolarSystem(bool onlyPlanets = false);
+	void LoadChildren(const SpaceObject& parent, bool includeSelf = false, bool recursive = false);
+	void LoadParent(const SpaceObject& child, bool includeMassCenter, bool includeSelf = false, bool recursive = false);
+	void LoadMoons(const SpaceObject& parent);
+	void LoadMoons(const std::string& parentName);
+	void LoadSolarSystem(bool entire = false);
+	void LoadAllAvailableObjects();
 
 	void AddObject(const SpaceObject& obj);
 
 	size_t GetObjectsLength() const;
 	SpaceObject& GetObjectByIndex(size_t idx);
 
-	bool FindObject(long id);
-	bool FindObject(const std::string& name);
-	bool FindObject(const SpaceObject& sample);
+	bool CheckObjectExists(long id);
+	bool CheckObjectExists(const std::string& name);
+	bool CheckObjectExists(const SpaceObject& sample);
 
-	SpaceObject& GetObject(long id);
-	SpaceObject& GetObject(const std::string& name);
-	SpaceObject& GetObject(const SpaceObject& sample);
+	SpaceObject& RetrieveObject(long id);
+	SpaceObject& RetrieveObject(const std::string& name);
+	SpaceObject& RetrieveObject(const SpaceObject& sample);
+
+	std::vector<SpaceObject*> GetLoadedPlanets();
+	std::vector<SpaceObject*> GetLoadedMoonsOf(const SpaceObject& planet);
+	std::vector<SpaceObject*> GetLoadedMoonsOf(const std::string& planetName);
+	std::vector<SpaceObject*> GetLoadedMoons();
+	std::vector<SpaceObject*> GetLoadedBarycenters();
 
 private:
 	std::vector<SpaceObject*> objects;

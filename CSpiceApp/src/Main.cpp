@@ -17,7 +17,29 @@ int main()
 		//app.SetDefaultUnits(App::UT_METRIC);
 		//app.SetDefaultUnits(App::UT_IMPERIAL);
 
-		app.LoadChildren(SpaceObject("Solar system barycenter"), true, true);
+		//app.LoadSolarSystem(); // Loads Solar System. Optional parameter controls whether to load only planets and Sun or to load entire Solar System
+		//app.LoadAllAvailableObjects(); // Loads all objects which were introduced in loaded kernels
+
+		//app.LoadSolarSystem();
+
+		//app.LoadMoons(SpaceObject("Earth")); // Creates space objects and uses it to specify parent body
+		//app.LoadMoons("Jupiter"); // Loads moons of Jupiter, internally the same as LoadMoons(SpaceObject("Jupiter"))
+		//if(app.CheckObjectExists("Pluto"))
+		//	app.LoadMoons(app.RetrieveObject("Pluto")); // Same as LoadMoons(SpaceObject("Pluto")), except this doesn't construct new SpaceObject instance, instead it uses reference to already loaded SpaceObject instance
+
+		//std::vector<SpaceObject*> plutoMoons = app.GetLoadedMoonsOf("Pluto");
+
+		app.LoadSolarSystem(true);
+
+		app.AddObject(SpaceBody("europa"));
+		app.AddObject(SpaceBody("MOON"));
+		app.AddObject(SpaceBody("Io"));
+
+		std::vector<SpaceObject*> barycenters = app.GetLoadedBarycenters();
+		std::vector<SpaceObject*> planets = app.GetLoadedPlanets();
+		std::vector<SpaceObject*> moons = app.GetLoadedMoons();
+		std::vector<SpaceObject*> jupiterMoons = app.GetLoadedMoonsOf(SpaceObject("Jupiter"));
+		std::vector<SpaceObject*> marsMoons = app.GetLoadedMoonsOf(SpaceObject("mars"));
 
 		std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels();
 

@@ -131,6 +131,36 @@ Window SpaceObject::GetCoverage() const
 	return coverage;
 }
 
+bool SpaceObject::IsBarycenter()
+{
+	return SpaceObject::IsBarycenter(spiceId);
+}
+
+bool SpaceObject::IsPlanetaryBarycenter()
+{
+	return SpaceObject::IsPlanetaryBarycenter(spiceId);
+}
+
+bool SpaceObject::IsPlanet()
+{
+	return SpaceObject::IsPlanet(spiceId);
+}
+
+bool SpaceObject::IsMoon()
+{
+	return SpaceObject::IsMoon(spiceId);
+}
+
+bool SpaceObject::IsBody()
+{
+	return SpaceObject::IsBody(spiceId);
+}
+
+bool SpaceObject::IsSun()
+{
+	return SpaceObject::IsSun(spiceId);
+}
+
 bool SpaceObject::ValidateId(long id)
 {
 	char objName[OBJECT_NAME_MAX_LENGTH];
@@ -145,7 +175,7 @@ bool SpaceObject::IsBarycenter(long id)
 	if(ValidateId(id) == false)
 		return false;
 
-	return IsPlanetaryBarycenter(id) || (id == SSB_SPICE_ID);
+	return IsPlanetaryBarycenter(id) || IsSSB(id);
 }
 
 bool SpaceObject::IsPlanetaryBarycenter(long id)
@@ -154,6 +184,14 @@ bool SpaceObject::IsPlanetaryBarycenter(long id)
 		return false;
 
 	return (id > 0 && id < 10);
+}
+
+bool SpaceObject::IsSSB(long id)
+{
+	if(ValidateId(id) == false)
+		return false;
+
+	return id == SSB_SPICE_ID;
 }
 
 bool SpaceObject::IsPlanet(long id)
@@ -169,7 +207,7 @@ bool SpaceObject::IsMoon(long id)
 	if(ValidateId(id) == false)
 		return false;
 
-	return IsBody(id) && !IsPlanet(id);
+	return IsBody(id) && !IsPlanet(id) && !IsSun(id);
 }
 
 bool SpaceObject::IsBody(long id)
@@ -177,10 +215,18 @@ bool SpaceObject::IsBody(long id)
 	if(ValidateId(id) == false)
 		return false;
 
-	return ((id > 100 && id < 1000) || id == SUN_SPICE_ID);
+	return ((id > 100 && id < 1000) || IsSun(id));
 }
 
-std::vector<long> SpaceObject::FindChildObjectIds(long id)
+bool SpaceObject::IsSun(long id)
+{
+	if(ValidateId(id) == false)
+		return false;
+
+	return id == SUN_SPICE_ID;
+}
+
+std::vector<long> SpaceObject::FindChildObjectIds(long id, bool includeMain)
 {
 	std::vector<long> ids;
 
@@ -194,7 +240,13 @@ std::vector<long> SpaceObject::FindChildObjectIds(long id)
 	}
 	else if(IsPlanetaryBarycenter(id))
 	{
-		for(int i = 1; i <= 99; i++)
+		int upperSatelliteId;
+		if(includeMain)
+			upperSatelliteId = 99; // X99 - id of a most massive body in the X-th barycenter
+		else
+			upperSatelliteId = 98;
+
+		for(int i = 1; i <= upperSatelliteId; i++)
 		{
 			long satelliteId = 100 * id + i;
 			if(ValidateId(satelliteId))
@@ -203,6 +255,26 @@ std::vector<long> SpaceObject::FindChildObjectIds(long id)
 	}
 
 	return ids;
+}
+
+long SpaceObject::FindChildMassCenterId(long id)
+{
+	if(IsPlanetaryBarycenter(id))
+		return id * 100 + 99;
+	else if(IsSSB(id))
+		return SUN_SPICE_ID;
+	else
+		return id;
+}
+
+std::vector<long> SpaceObject::FindMoonIds(long id)
+{
+	long barycenterId = SpaceObject::FindParentObjectId(id);
+
+	if(!SpaceObject::IsPlanetaryBarycenter(barycenterId))
+		CSpiceUtil::SignalError("FindMoonIds failed: 'id' argument is not a valid planet id");
+
+	return FindChildObjectIds(barycenterId, false);
 }
 
 long SpaceObject::FindParentObjectId(long id)
@@ -224,7 +296,7 @@ long SpaceObject::FindParentObjectId(long id)
 std::vector<long> SpaceObject::GetLoadedSpkIds()
 {
 	SPICEINT_CELL(cell, CELL_SIZE_LARGE);
-	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("PCK");
+	std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels("SPK");
 	for(size_t i = 0; i < kernels.size(); i++)
 	{
 		CSPICE_ASSERT(spkobj_c(kernels[i].filename.c_str(), &cell));

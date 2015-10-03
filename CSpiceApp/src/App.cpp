@@ -104,9 +104,7 @@ void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursi
 	std::vector<long> childrenIds = SpaceObject::FindChildObjectIds(parentId);
 
 	if(includeSelf)
-	{
 		AddObject(parent);
-	}
 
 	for(size_t i = 0; i < childrenIds.size(); i++)
 	{
@@ -118,13 +116,55 @@ void App::LoadChildren(const SpaceObject& parent, bool includeSelf, bool recursi
 			AddObject(SpaceObject(childId));
 
 		if(recursive)
-			LoadChildren(SpaceObject(childId), false);
+			LoadChildren(SpaceObject(childId), false, true);
 	}
 }
 
-void App::LoadSolarSystem(bool onlyPlanets)
+void App::LoadParent(const SpaceObject& child, bool includeMassCenter, bool includeSelf, bool recursive)
 {
-	if(onlyPlanets)
+	if(includeSelf)
+		AddObject(child);
+
+	long childId = child.GetSpiceId();
+	long parentId = SpaceObject::FindParentObjectId(childId);
+
+	if(childId == parentId)
+		return;
+
+	if(SpaceObject::IsBody(parentId))
+		AddObject(SpaceBody(parentId));
+	else
+		AddObject(SpaceObject(parentId));
+
+	if(includeMassCenter)
+	{
+		long massCenterId = SpaceObject::FindChildMassCenterId(parentId);
+		if(massCenterId != parentId)
+			AddObject(SpaceBody(massCenterId));
+	}
+
+	if(recursive)
+		LoadParent(SpaceObject(parentId), includeMassCenter, false, true);
+}
+
+void App::LoadMoons(const SpaceObject& planet)
+{
+	long barycenterId = SpaceObject::FindParentObjectId(planet.GetSpiceId());
+
+	if(!SpaceObject::IsPlanetaryBarycenter(barycenterId))
+		CSpiceUtil::SignalError("LoadMoons failed: 'planet' argument is not a valid planet object");
+
+	return LoadChildren(SpaceObject(barycenterId), false, false);
+}
+
+void App::LoadMoons(const std::string& parentName)
+{
+	return LoadMoons(SpaceObject(parentName));
+}
+
+void App::LoadSolarSystem(bool entire)
+{
+	if(!entire)
 	{
 		std::vector<long> barycenterIds = SpaceObject::FindChildObjectIds(SpaceObject::SSB.GetSpiceId());
 
@@ -132,7 +172,7 @@ void App::LoadSolarSystem(bool onlyPlanets)
 		{
 			long planetId = barycenterIds[i] * 100 + 99;
 
-			if(SpaceObject::IsPlanet(planetId))
+			if(SpaceObject::IsPlanet(planetId) || SpaceObject::IsSun(planetId))
 				AddObject(SpaceBody(planetId));
 		}
 	}
@@ -142,20 +182,26 @@ void App::LoadSolarSystem(bool onlyPlanets)
 	}
 }
 
+void App::LoadAllAvailableObjects()
+{
+	std::vector<long> loadedIds = SpaceObject::GetLoadedSpkIds();
+	for(size_t i = 0; i < loadedIds.size(); i++)
+	{
+		if(SpaceObject::IsBody(loadedIds[i]))
+			AddObject(SpaceBody(loadedIds[i]));
+		else if(SpaceObject::ValidateId(loadedIds[i]))
+			AddObject(SpaceObject(loadedIds[i]));
+	}
+
+	AddObject(SpaceObject::SSB);
+}
+
 void App::AddObject(const SpaceObject& obj)
 {
-	//try
-	//{
-	//	FindObject(obj);
-	//}
-	//catch(const std::runtime_error&)
-	//{
-	//	objects.push_back(obj.Clone());
-	//}
-
-	if(FindObject(obj) == false)
+	if(CheckObjectExists(obj) == false)
 	{
 		objects.push_back(obj.Clone());
+		LoadParent(obj, true, false, true);
 	}
 }
 
@@ -169,7 +215,7 @@ SpaceObject& App::GetObjectByIndex(size_t idx)
 	return *objects[idx];
 }
 
-bool App::FindObject(long id)
+bool App::CheckObjectExists(long id)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
@@ -180,7 +226,7 @@ bool App::FindObject(long id)
 	return false;
 }
 
-bool App::FindObject(const std::string& name)
+bool App::CheckObjectExists(const std::string& name)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
@@ -188,15 +234,15 @@ bool App::FindObject(const std::string& name)
 			return true;
 	}
 
-	return FindObject(SpaceObject(name));
+	return CheckObjectExists(SpaceObject(name));
 }
 
-bool App::FindObject(const SpaceObject& sample)
+bool App::CheckObjectExists(const SpaceObject& sample)
 {
-	return FindObject(sample.GetSpiceId());
+	return CheckObjectExists(sample.GetSpiceId());
 }
 
-SpaceObject& App::GetObject(long id)
+SpaceObject& App::RetrieveObject(long id)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
@@ -204,10 +250,12 @@ SpaceObject& App::GetObject(long id)
 			return GetObjectByIndex(i);
 	}
 
-	throw std::runtime_error("FindObject haven't found requested object");
+	CSpiceUtil::SignalError("RetrieveObject haven't found requested object");
+
+	throw;
 }
 
-SpaceObject& App::GetObject(const std::string& name)
+SpaceObject& App::RetrieveObject(const std::string& name)
 {
 	for(size_t i = 0; i < objects.size(); i++)
 	{
@@ -215,17 +263,66 @@ SpaceObject& App::GetObject(const std::string& name)
 			return GetObjectByIndex(i);
 	}
 
-	try
-	{
-		return GetObject(SpaceObject(name));
-	}
-	catch(const std::runtime_error&)
-	{
-		throw std::runtime_error("FindObject haven't found requested object");
-	}
+	return RetrieveObject(SpaceObject(name));
 }
 
-SpaceObject& App::GetObject(const SpaceObject& sample)
+SpaceObject& App::RetrieveObject(const SpaceObject& sample)
 {
-	return GetObject(sample.GetSpiceId());
+	return RetrieveObject(sample.GetSpiceId());
+}
+
+std::vector<SpaceObject*> App::GetLoadedPlanets()
+{
+	std::vector<SpaceObject*> planets;
+	for(size_t i = 0; i < objects.size(); i++)
+	{
+		if(objects[i]->IsPlanet())
+			planets.push_back(objects[i]);
+	}
+
+	return planets;
+}
+
+std::vector<SpaceObject*> App::GetLoadedMoonsOf(const SpaceObject& planet)
+{
+	std::vector<SpaceObject*> moons;
+
+	std::vector<long> allMoonIds = SpaceObject::FindMoonIds(planet.GetSpiceId());
+
+	for(size_t i = 0; i < allMoonIds.size(); i++)
+	{
+		if(CheckObjectExists(allMoonIds[i]))
+			moons.push_back(&RetrieveObject(allMoonIds[i]));
+	}
+
+	return moons;
+}
+
+std::vector<SpaceObject*> App::GetLoadedMoonsOf(const std::string& planetName)
+{
+	return GetLoadedMoonsOf(SpaceObject(planetName));
+}
+
+std::vector<SpaceObject*> App::GetLoadedMoons()
+{
+	std::vector<SpaceObject*> moons;
+	for(size_t i = 0; i < objects.size(); i++)
+	{
+		if(objects[i]->IsMoon())
+			moons.push_back(objects[i]);
+	}
+
+	return moons;
+}
+
+std::vector<SpaceObject*> App::GetLoadedBarycenters()
+{
+	std::vector<SpaceObject*> barycenters;
+	for(size_t i = 0; i < objects.size(); i++)
+	{
+		if(objects[i]->IsBarycenter())
+			barycenters.push_back(objects[i]);
+	}
+
+	return barycenters;
 }

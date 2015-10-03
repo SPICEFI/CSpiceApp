@@ -37,15 +37,27 @@ public:
 
 	Window GetCoverage() const;
 
+	bool IsBarycenter();
+	bool IsPlanetaryBarycenter();
+	bool IsPlanet();
+	bool IsMoon();
+	bool IsBody();
+	bool IsSun();
+
+
 	static bool ValidateId(long id);
 
 	static bool IsBarycenter(long id);
 	static bool IsPlanetaryBarycenter(long id);
+	static bool IsSSB(long id);
 	static bool IsPlanet(long id);
 	static bool IsMoon(long id);
 	static bool IsBody(long id);
+	static bool IsSun(long id);
 
-	static std::vector<long> FindChildObjectIds(long id);
+	static std::vector<long> FindChildObjectIds(long id, bool includeMassCenter = true);
+	static long FindChildMassCenterId(long id);
+	static std::vector<long> FindMoonIds(long id);
 	static long FindParentObjectId(long id);
 
 	static std::vector<long> GetLoadedSpkIds();
