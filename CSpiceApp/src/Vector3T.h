@@ -37,7 +37,14 @@ public:
 		double ydivx = y / x;
 		double zdivx = z / x;
 
-		return x * std::sqrt(1.0 + ydivx*ydivx + zdivx*zdivx);
+		T result = x * std::sqrt(1.0 + ydivx*ydivx + zdivx*zdivx);
+
+		// TODO: understand how to use abs
+		T zero = T();
+		if(result > zero)
+			return result;
+		else
+			return -result;
 	}
 
 	T& operator+=(const Vector3T& rhs)

@@ -37,12 +37,13 @@ public:
 
 	Window GetCoverage() const;
 
-	bool IsBarycenter();
-	bool IsPlanetaryBarycenter();
-	bool IsPlanet();
-	bool IsMoon();
-	bool IsBody();
-	bool IsSun();
+	bool IsBarycenter() const;
+	bool IsPlanetaryBarycenter() const;
+	bool IsSSB() const;
+	bool IsPlanet() const;
+	bool IsMoon() const;
+	bool IsBody() const;
+	bool IsSun() const;
 
 
 	static bool ValidateId(long id);

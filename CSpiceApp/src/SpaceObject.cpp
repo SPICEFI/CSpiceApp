@@ -131,32 +131,37 @@ Window SpaceObject::GetCoverage() const
 	return coverage;
 }
 
-bool SpaceObject::IsBarycenter()
+bool SpaceObject::IsBarycenter() const
 {
 	return SpaceObject::IsBarycenter(spiceId);
 }
 
-bool SpaceObject::IsPlanetaryBarycenter()
+bool SpaceObject::IsPlanetaryBarycenter() const
 {
 	return SpaceObject::IsPlanetaryBarycenter(spiceId);
 }
 
-bool SpaceObject::IsPlanet()
+bool SpaceObject::IsSSB() const
+{
+	return SpaceObject::IsSSB(spiceId);
+}
+
+bool SpaceObject::IsPlanet() const
 {
 	return SpaceObject::IsPlanet(spiceId);
 }
 
-bool SpaceObject::IsMoon()
+bool SpaceObject::IsMoon() const
 {
 	return SpaceObject::IsMoon(spiceId);
 }
 
-bool SpaceObject::IsBody()
+bool SpaceObject::IsBody() const
 {
 	return SpaceObject::IsBody(spiceId);
 }
 
-bool SpaceObject::IsSun()
+bool SpaceObject::IsSun() const
 {
 	return SpaceObject::IsSun(spiceId);
 }

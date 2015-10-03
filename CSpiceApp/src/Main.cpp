@@ -13,23 +13,17 @@ int main()
 		app.LoadKernel("data/meta.tm");
 
 		app.SetReferenceFrame(Frame::ECLIPJ2000); // Set reference frame to ECLIPJ200, default is J2000
-		app.SetDefaultUnits(App::UT_DEFAULT); // This is set by default
-		//app.SetDefaultUnits(App::UT_METRIC);
-		//app.SetDefaultUnits(App::UT_IMPERIAL);
+		app.SetDefaultUnits(App::UT_DEFAULT); // Same as UT_METRIC, except Length is measured in km. This is set by default
+		//app.SetDefaultUnits(App::UT_METRIC); // Default units are meters, meters per second and kilograms
+		//app.SetDefaultUnits(App::UT_IMPERIAL); // Default units are miles, miles per hour and pounds
 
 		//app.LoadSolarSystem(); // Loads Solar System. Optional parameter controls whether to load only planets and Sun or to load entire Solar System
 		//app.LoadAllAvailableObjects(); // Loads all objects which were introduced in loaded kernels
 
-		//app.LoadSolarSystem();
-
-		//app.LoadMoons(SpaceObject("Earth")); // Creates space objects and uses it to specify parent body
+		//app.LoadMoons(SpaceObject("Earth")); // Creates SpaceObjects instance and uses it to specify parent body
 		//app.LoadMoons("Jupiter"); // Loads moons of Jupiter, internally the same as LoadMoons(SpaceObject("Jupiter"))
 		//if(app.CheckObjectExists("Pluto"))
 		//	app.LoadMoons(app.RetrieveObject("Pluto")); // Same as LoadMoons(SpaceObject("Pluto")), except this doesn't construct new SpaceObject instance, instead it uses reference to already loaded SpaceObject instance
-
-		//std::vector<SpaceObject*> plutoMoons = app.GetLoadedMoonsOf("Pluto");
-
-		app.LoadSolarSystem(true);
 
 		app.AddObject(SpaceBody("europa"));
 		app.AddObject(SpaceBody("MOON"));
@@ -40,6 +34,8 @@ int main()
 		std::vector<SpaceObject*> moons = app.GetLoadedMoons();
 		std::vector<SpaceObject*> jupiterMoons = app.GetLoadedMoonsOf(SpaceObject("Jupiter"));
 		std::vector<SpaceObject*> marsMoons = app.GetLoadedMoonsOf(SpaceObject("mars"));
+
+		app.LoadSolarSystem(true);
 
 		std::vector<KernelData> kernels = CSpiceUtil::GetLoadedKernels();
 

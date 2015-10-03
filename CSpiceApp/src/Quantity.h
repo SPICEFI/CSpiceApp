@@ -187,11 +187,11 @@ private:
 	}
 	friend bool operator>(const Quantity& lhs, const Quantity& rhs)
 	{
-		return lhs.ValueInBase() > lhs.ValueInBase();
+		return lhs.ValueInBase() > rhs.ValueInBase();
 	}
 	friend bool operator<(const Quantity& lhs, const Quantity& rhs)
 	{
-		return lhs.ValueInBase() < lhs.ValueInBase();
+		return lhs.ValueInBase() < rhs.ValueInBase();
 	}
 };
 
