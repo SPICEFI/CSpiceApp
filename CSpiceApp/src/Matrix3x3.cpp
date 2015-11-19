@@ -9,9 +9,9 @@ Matrix3x3::Matrix3x3()
 		for(int j = 0; j < 3; j++)
 		{
 			if(i == j)
-				matrix[i][j] = 1.0;
+				matrix[i][j] = 1.0f;
 			else
-				matrix[i][j] = 0.0;
+				matrix[i][j] = 0.0f;
 		}
 	}
 }
