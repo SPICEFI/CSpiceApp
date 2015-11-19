@@ -35,8 +35,6 @@ public:
 	bool HasDefaultFrame() const;
 	Frame GetDefaultFrame() const;
 
-	//Orientation GetOrientation(const Time& t, const Frame& ref = Frame::J2000) const;
-
 	bool HasParameter(BulkParameter param) const;
 
 	double GetSingleDimParam(BulkParameter param) const;

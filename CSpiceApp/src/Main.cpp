@@ -186,7 +186,7 @@ int main()
 								fout << "\t\t\t";
 								for(int col = 0; col < 4; col++)
 								{
-									fout << std::fixed << std::setw(12) << matrix.Get(row, col) << std::defaultfloat << "\t";
+									fout << std::fixed << std::setw(11) << matrix.Get(row, col) << std::defaultfloat << " ";
 								}
 								fout << std::endl;
 							}

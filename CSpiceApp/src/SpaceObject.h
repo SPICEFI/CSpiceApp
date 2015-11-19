@@ -8,7 +8,6 @@
 #include "Vector3T.h"
 #include "Frame.h"
 #include "Date.h"
-#include "Orientation.h"
 #include "Window.h"
 
 #define SSB_SPICE_ID 0
