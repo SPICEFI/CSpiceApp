@@ -18,6 +18,7 @@
     <ClCompile Include="src\Frame.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Matrix3x3.cpp" />
+    <ClCompile Include="src\Matrix4x4.cpp" />
     <ClCompile Include="src\Orientation.cpp" />
     <ClCompile Include="src\Quantity.cpp" />
     <ClCompile Include="src\SpaceBody.cpp" />
@@ -35,6 +36,7 @@
     <ClInclude Include="src\Frame.h" />
     <ClInclude Include="src\Main.h" />
     <ClInclude Include="src\Matrix3x3.h" />
+    <ClInclude Include="src\Matrix4x4.h" />
     <ClInclude Include="src\Orientation.h" />
     <ClInclude Include="src\SpaceBody.h" />
     <ClInclude Include="src\SpaceObject.h" />

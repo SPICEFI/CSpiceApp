@@ -107,22 +107,40 @@ Orientation Frame::GetOrientation(const Date& t, const Frame& ref) const
 	return Orientation(AxisX(t, ref), AxisY(t, ref), AxisZ(t, ref));
 }
 
-Matrix3x3 Frame::GetTransformationMatrix(const Date& t, const Frame& ref) const
+//Matrix3x3 Frame::GetTransformationMatrix(const Date& t, const Frame& ref) const
+//{
+//	double transform[3][3];
+//	CSPICE_ASSERT(pxform_c(GetSpiceName().c_str(), ref.GetSpiceName().c_str(), t.AsDouble(), transform));
+//
+//	float fMatrix[3][3];
+//
+//	for(int i = 0; i < 3; i++)
+//	{
+//		for(int j = 0; j < 3; j++)
+//		{
+//			fMatrix[i][j] = static_cast<float>(transform[i][j]);
+//		}
+//	}
+//
+//	return Matrix3x3(fMatrix);
+//}
+
+Matrix4x4 Frame::GetTransformationMatrix(const Date& t, const Frame& ref) const
 {
-	double transform[3][3];
-	CSPICE_ASSERT(pxform_c(GetSpiceName().c_str(), ref.GetSpiceName().c_str(), t.AsDouble(), transform));
+	Matrix4x4 transform = Matrix4x4::Zero;
 
-	float fMatrix[3][3];
+	Vector3 x = AxisX(t, ref);
+	Vector3 y = AxisY(t, ref);
+	Vector3 z = AxisZ(t, ref);
 
-	for(int i = 0; i < 3; i++)
+	for(int row = 0; row < 3; row++)
 	{
-		for(int j = 0; j < 3; j++)
-		{
-			fMatrix[i][j] = static_cast<float>(transform[i][j]);
-		}
+		transform.Set(row, 0, x[row]);
+		transform.Set(row, 1, y[row]);
+		transform.Set(row, 2, z[row]);
 	}
 
-	return Matrix3x3(fMatrix);
+	return transform;
 }
 
 bool Frame::HasAvailableData() const

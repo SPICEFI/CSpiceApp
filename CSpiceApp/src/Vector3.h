@@ -8,6 +8,8 @@
 #pragma once
 #include <cmath>
 
+#include <stdexcept>
+
 class Vector3
 {
 public:
@@ -39,6 +41,7 @@ public:
 	Vector3& operator=(const Vector3& rVector);
 	Vector3& operator*=(float scalar);
 	Vector3 operator*(float scalar) const;
+	float operator[](size_t i);
 
 	friend Vector3& operator+=(Vector3& lVector, const Vector3& rVector);
 

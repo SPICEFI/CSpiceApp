@@ -5,7 +5,8 @@
 #include "Date.h"
 #include "Orientation.h"
 #include "Window.h"
-#include "Matrix3x3.h"
+//#include "Matrix3x3.h"
+#include "Matrix4x4.h"
 
 #define FRAME_NAME_MAX_LENGTH 64
 
@@ -45,7 +46,8 @@ public:
 	Vector3 AxisZ(const Date& t, const Frame& ref) const;
 
 	Orientation GetOrientation(const Date& t, const Frame& ref) const;
-	Matrix3x3 GetTransformationMatrix(const Date& t, const Frame& ref) const;
+	//Matrix3x3 GetTransformationMatrix(const Date& t, const Frame& ref) const;
+	Matrix4x4 GetTransformationMatrix(const Date& t, const Frame& ref) const;
 
 	bool HasAvailableData() const;
 	bool HasLimitedCoverage() const;

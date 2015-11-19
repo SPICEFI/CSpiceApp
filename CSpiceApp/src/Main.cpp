@@ -178,16 +178,15 @@ int main()
 							fout << "\t\tY axis: (" << axisY.x << ", " << axisY.y << ", " << axisY.z << ")" << std::endl;
 							fout << "\t\tZ axis: (" << axisZ.x << ", " << axisZ.y << ", " << axisZ.z << ")" << std::endl;
 
-							const Matrix3x3& matrix = bodyFrame.GetTransformationMatrix(t, app.GetReferenceFrame());
-							const float* m = matrix.Get();
+							const Matrix4x4& matrix = bodyFrame.GetTransformationMatrix(t, app.GetReferenceFrame());
 
 							fout << "\t\tTransformation matrix:" << std::endl;
-							for(int row = 0; row < 3; row++)
+							for(int row = 0; row < 4; row++)
 							{
 								fout << "\t\t\t";
-								for(int col = 0; col < 3; col++)
+								for(int col = 0; col < 4; col++)
 								{
-									fout << *(m + 3 * row + col) << "\t";
+									fout << std::fixed << std::setw(12) << matrix.Get(row, col) << std::defaultfloat << "\t";
 								}
 								fout << std::endl;
 							}
@@ -212,7 +211,7 @@ int main()
 
 			}
 
-			fout << "=======================================================================" << std::endl;
+			fout << "===============================================================================" << std::endl;
 			fout << std::endl;
 		}
 

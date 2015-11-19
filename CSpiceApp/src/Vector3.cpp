@@ -95,6 +95,24 @@ Vector3 Vector3::operator*(float scalar) const
 	return Vector3(newX, newY, newZ);
 }
 
+float Vector3::operator[](size_t i)
+{
+	switch(i)
+	{
+	case 0:
+		return x;
+		break;
+	case 1:
+		return y;
+		break;
+	case 2:
+		return z;
+		break;
+	}
+
+	throw std::invalid_argument("Vector3::operator[]: argument out of range");
+}
+
 float Vector3::Length() const
 {
 	return(sqrtf(x * x + y * y + z * z));
