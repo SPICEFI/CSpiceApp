@@ -12,35 +12,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App.cpp" />
-    <ClCompile Include="src\CSpice.cpp" />
-    <ClCompile Include="src\CSpiceCore.cpp" />
-    <ClCompile Include="src\CSpiceUtil.cpp" />
-    <ClCompile Include="src\Frame.cpp" />
+    <ClCompile Include="src\CSpice\CSpice.cpp" />
+    <ClCompile Include="src\CSpice\CSpiceCore.cpp" />
+    <ClCompile Include="src\CSpice\CSpiceUtil.cpp" />
+    <ClCompile Include="src\CSpice\Date.cpp" />
+    <ClCompile Include="src\CSpice\Frame.cpp" />
+    <ClCompile Include="src\CSpice\SpaceBody.cpp" />
+    <ClCompile Include="src\CSpice\SpaceObject.cpp" />
+    <ClCompile Include="src\CSpice\Window.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Matrix4x4.cpp" />
-    <ClCompile Include="src\Quantity.cpp" />
-    <ClCompile Include="src\SpaceBody.cpp" />
-    <ClCompile Include="src\SpaceObject.cpp" />
-    <ClCompile Include="src\Date.cpp" />
-    <ClCompile Include="src\Vector3.cpp" />
-    <ClCompile Include="src\Vector3T.cpp" />
-    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\Math\Matrix4x4.cpp" />
+    <ClCompile Include="src\Math\Quantity.cpp" />
+    <ClCompile Include="src\Math\Vector3.cpp" />
+    <ClCompile Include="src\Math\Vector3T.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App.h" />
-    <ClInclude Include="src\CSpice.h" />
-    <ClInclude Include="src\CSpiceCore.h" />
-    <ClInclude Include="src\CSpiceUtil.h" />
-    <ClInclude Include="src\Frame.h" />
+    <ClInclude Include="src\CSpice\CSpice.h" />
+    <ClInclude Include="src\CSpice\CSpiceCore.h" />
+    <ClInclude Include="src\CSpice\CSpiceUtil.h" />
+    <ClInclude Include="src\CSpice\Date.h" />
+    <ClInclude Include="src\CSpice\Frame.h" />
+    <ClInclude Include="src\CSpice\SpaceBody.h" />
+    <ClInclude Include="src\CSpice\SpaceObject.h" />
+    <ClInclude Include="src\CSpice\Window.h" />
     <ClInclude Include="src\Main.h" />
-    <ClInclude Include="src\Matrix4x4.h" />
-    <ClInclude Include="src\SpaceBody.h" />
-    <ClInclude Include="src\SpaceObject.h" />
-    <ClInclude Include="src\Date.h" />
-    <ClInclude Include="src\Quantity.h" />
-    <ClInclude Include="src\Vector3.h" />
-    <ClInclude Include="src\Vector3T.h" />
-    <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\Math\Matrix4x4.h" />
+    <ClInclude Include="src\Math\Quantity.h" />
+    <ClInclude Include="src\Math\Vector3.h" />
+    <ClInclude Include="src\Math\Vector3T.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BABADF43-DC10-42B9-8CC7-25B8FA60AA1B}</ProjectGuid>

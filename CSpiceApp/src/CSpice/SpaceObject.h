@@ -4,11 +4,11 @@
 #include <vector>
 
 #include "CSpiceCore.h"
-#include "Vector3.h"
-#include "Vector3T.h"
 #include "Frame.h"
 #include "Date.h"
 #include "Window.h"
+#include "../Math/Vector3.h"
+#include "../Math/Vector3T.h"
 
 #define SSB_SPICE_ID 0
 #define SUN_SPICE_ID 10

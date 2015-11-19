@@ -1,7 +1,6 @@
 #pragma once
 
-#include "CSpice.h"
-#include "Quantity.h"
+#include "CSpice/CSpice.h"
 
 #include <vector>
 #include <string>

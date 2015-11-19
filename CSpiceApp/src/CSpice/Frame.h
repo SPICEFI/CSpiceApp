@@ -1,11 +1,10 @@
 #pragma once
 
 #include "CSpiceCore.h"
-#include "Vector3.h"
 #include "Date.h"
 #include "Window.h"
-//#include "Matrix3x3.h"
-#include "Matrix4x4.h"
+#include "../Math/Vector3.h"
+#include "../Math/Matrix4x4.h"
 
 #define FRAME_NAME_MAX_LENGTH 64
 

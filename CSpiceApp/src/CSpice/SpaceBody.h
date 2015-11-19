@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SpaceObject.h"
-#include "Quantity.h"
+#include "../Math/Quantity.h"
 
 #include <vector>
 #include <array>
